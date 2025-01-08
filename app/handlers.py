@@ -231,95 +231,89 @@ async def tsh(callback: CallbackQuery):
 
 @router.callback_query(F.data == 'Popinz1')
 async def tsh(callback: CallbackQuery):
-    # Выполнение SQL-запроса
+    
     cursor.execute('SELECT sokrash, vyz_sokr FROM vyz WHERE napravlenie = "Inz"')
     res = cursor.fetchall()
     
-    # Создаем список для кнопок
     buttons = []
     
-    # Добавляем кнопки для каждой записи в res
     for gg in res:
         buttons.append([InlineKeyboardButton(text=gg[0], callback_data=gg[1])])
     buttons.append([InlineKeyboardButton(text='Настройки поиска', callback_data='opt')])
     buttons.append([InlineKeyboardButton(text='Назад📌', callback_data='main')])
-    # Создаем клавиатуру из списка кнопок
+    
     keyboard = InlineKeyboardMarkup(inline_keyboard=buttons)
     await callback.answer('')
     await callback.message.edit_text('Список вузов, в которых можно обучиться на профессию инженера',reply_markup=keyboard)
 
 @router.callback_query(F.data == 'Popit1')
 async def tsh(callback: CallbackQuery):
-    # Выполнение SQL-запроса
+    
     cursor.execute('SELECT sokrash, vyz_sokr FROM vyz WHERE napravlenie = "It"')
     res = cursor.fetchall()
     
-    # Создаем список для кнопок
     buttons = []
     
-    # Добавляем кнопки для каждой записи в res
     for gg in res:
         buttons.append([InlineKeyboardButton(text=gg[0], callback_data=gg[1])])
     buttons.append([InlineKeyboardButton(text='Настройки поиска', callback_data='opt')])
     buttons.append([InlineKeyboardButton(text='Назад📌', callback_data='main')])
-    # Создаем клавиатуру из списка кнопок
+    
     keyboard = InlineKeyboardMarkup(inline_keyboard=buttons)
     await callback.answer('')
     await callback.message.edit_text(f'Список вузов, в которых можно обучиться на профессию It-специалиста',reply_markup=keyboard)
 
 @router.callback_query(F.data == 'Popecon1')
 async def tsh(callback: CallbackQuery):
-    # Выполнение SQL-запроса
+    
     cursor.execute('SELECT sokrash, vyz_sokr FROM vyz WHERE napravlenie = "Econ"')
     res = cursor.fetchall()
     
-    # Создаем список для кнопок
     buttons = []
     
-    # Добавляем кнопки для каждой записи в res
     for gg in res:
         buttons.append([InlineKeyboardButton(text=gg[0], callback_data=gg[1])])
     buttons.append([InlineKeyboardButton(text='Настройки поиска', callback_data='opt')])
     buttons.append([InlineKeyboardButton(text='Назад📌', callback_data='main')])
-    # Создаем клавиатуру из списка кнопок
+    
     keyboard = InlineKeyboardMarkup(inline_keyboard=buttons)
     await callback.answer('')
     await callback.message.edit_text(f'Список вузов, в которых можно обучиться на профессию Экономиста',reply_markup=keyboard)
 
 @router.callback_query(F.data == 'Popfin1')
 async def tsh(callback: CallbackQuery):
-    # Выполнение SQL-запроса
+   
     cursor.execute('SELECT sokrash, vyz_sokr FROM vyz WHERE napravlenie = "Fin"')
     res = cursor.fetchall()
     
-    # Создаем список для кнопок
+    
     buttons = []
     
-    # Добавляем кнопки для каждой записи в res
+    
     for gg in res:
         buttons.append([InlineKeyboardButton(text=gg[0], callback_data=gg[1])])
     buttons.append([InlineKeyboardButton(text='Настройки поиска', callback_data='opt')])
     buttons.append([InlineKeyboardButton(text='Назад📌', callback_data='main')])
-    # Создаем клавиатуру из списка кнопок
+    
     keyboard = InlineKeyboardMarkup(inline_keyboard=buttons)
     await callback.answer('')
     await callback.message.edit_text(f'Список вузов, в которых можно обучиться на профессию Финансиста',reply_markup=keyboard)
 
 @router.callback_query(F.data == 'Popbuh1')
 async def tsh(callback: CallbackQuery):
-    # Выполнение SQL-запроса
+    
     cursor.execute('SELECT sokrash, vyz_sokr FROM vyz WHERE napravlenie = "Buh"')
     res = cursor.fetchall()
     
-    # Создаем список для кнопок
+    
     buttons = []
     
-    # Добавляем кнопки для каждой записи в res
+    
     for gg in res:
         buttons.append([InlineKeyboardButton(text=gg[0], callback_data=gg[1])])
     buttons.append([InlineKeyboardButton(text='Настройки поиска', callback_data='opt')])
     buttons.append([InlineKeyboardButton(text='Назад📌', callback_data='main')])
-    # Создаем клавиатуру из списка кнопок
+   
     keyboard = InlineKeyboardMarkup(inline_keyboard=buttons)
     await callback.answer('')
     await callback.message.edit_text(f'Список вузов, в которых можно обучиться на профессию Бухгалтер',reply_markup=keyboard)
@@ -327,152 +321,138 @@ async def tsh(callback: CallbackQuery):
 
 @router.callback_query(F.data == 'Pophim1')
 async def tsh(callback: CallbackQuery):
-    # Выполнение SQL-запроса
+    
     cursor.execute('SELECT sokrash, vyz_sokr FROM vyz WHERE napravlenie = "Him"')
     res = cursor.fetchall()
     
-    # Создаем список для кнопок
+   
     buttons = []
     
-    # Добавляем кнопки для каждой записи в res
     for gg in res:
         buttons.append([InlineKeyboardButton(text=gg[0], callback_data=gg[1])])
     buttons.append([InlineKeyboardButton(text='Настройки поиска', callback_data='opt')])
     buttons.append([InlineKeyboardButton(text='Назад📌', callback_data='main')])
-    # Создаем клавиатуру из списка кнопок
+  
     keyboard = InlineKeyboardMarkup(inline_keyboard=buttons)
     await callback.answer('')
     await callback.message.edit_text(f'Список вузов, в которых можно обучиться на профессию Химика',reply_markup=keyboard)
 
 @router.callback_query(F.data == 'Popecol1')
 async def tsh(callback: CallbackQuery):
-    # Выполнение SQL-запроса
+    
     cursor.execute('SELECT sokrash, vyz_sokr FROM vyz WHERE napravlenie = "Ecol"')
     res = cursor.fetchall()
     
-    # Создаем список для кнопок
     buttons = []
     
-    # Добавляем кнопки для каждой записи в res
     for gg in res:
         buttons.append([InlineKeyboardButton(text=gg[0], callback_data=gg[1])])
     buttons.append([InlineKeyboardButton(text='Настройки поиска', callback_data='opt')])
     buttons.append([InlineKeyboardButton(text='Назад📌', callback_data='main')])
-    # Создаем клавиатуру из списка кнопок
+    
     keyboard = InlineKeyboardMarkup(inline_keyboard=buttons)
     await callback.answer('')
     await callback.message.edit_text(f'Список вузов, в которых можно обучиться на профессию Эколога',reply_markup=keyboard)
 
 @router.callback_query(F.data == 'Poppsihoter1')
 async def tsh(callback: CallbackQuery):
-    # Выполнение SQL-запроса
+    
     cursor.execute('SELECT sokrash, vyz_sokr FROM vyz WHERE napravlenie = "Psihoter"')
     res = cursor.fetchall()
     
-    # Создаем список для кнопок
     buttons = []
     
-    # Добавляем кнопки для каждой записи в res
     for gg in res:
         buttons.append([InlineKeyboardButton(text=gg[0], callback_data=gg[1])])
     buttons.append([InlineKeyboardButton(text='Настройки поиска', callback_data='opt')])
     buttons.append([InlineKeyboardButton(text='Назад📌', callback_data='main')])
-    # Создаем клавиатуру из списка кнопок
+   
     keyboard = InlineKeyboardMarkup(inline_keyboard=buttons)
     await callback.answer('')
     await callback.message.edit_text(f'Список вузов, в которых можно обучиться на профессию Психотерапевта',reply_markup=keyboard)
 
 @router.callback_query(F.data == 'Popall1')
 async def tsh(callback: CallbackQuery):
-    # Выполнение SQL-запроса
+    
     cursor.execute('SELECT sokrash, vyz_sokr FROM vyz WHERE napravlenie = "All"')
     res = cursor.fetchall()
     
-    # Создаем список для кнопок
     buttons = []
     
-    # Добавляем кнопки для каждой записи в res
     for gg in res:
         buttons.append([InlineKeyboardButton(text=gg[0], callback_data=gg[1])])
     buttons.append([InlineKeyboardButton(text='Настройки поиска', callback_data='opt')])
     buttons.append([InlineKeyboardButton(text='Назад📌', callback_data='main')])
-    # Создаем клавиатуру из списка кнопок
+    
     keyboard = InlineKeyboardMarkup(inline_keyboard=buttons)
     await callback.answer('')
     await callback.message.edit_text(f'Список вузов, в которых можно обучиться на профессию Аллерголога',reply_markup=keyboard)
 
 @router.callback_query(F.data == 'Popbot1')
 async def tsh(callback: CallbackQuery):
-    # Выполнение SQL-запроса
+    
     cursor.execute('SELECT sokrash, vyz_sokr FROM vyz WHERE napravlenie = "Bot"')
     res = cursor.fetchall()
     
-    # Создаем список для кнопок
     buttons = []
     
-    # Добавляем кнопки для каждой записи в res
     for gg in res:
         buttons.append([InlineKeyboardButton(text=gg[0], callback_data=gg[1])])
     buttons.append([InlineKeyboardButton(text='Настройки поиска', callback_data='opt')])
     buttons.append([InlineKeyboardButton(text='Назад📌', callback_data='main')])
-    # Создаем клавиатуру из списка кнопок
+    
     keyboard = InlineKeyboardMarkup(inline_keyboard=buttons)
     await callback.answer('')
     await callback.message.edit_text(f'Список вузов, в которых можно обучиться на профессию Ботаника',reply_markup=keyboard)
 
 @router.callback_query(F.data == 'Popmark1')
 async def tsh(callback: CallbackQuery):
-    # Выполнение SQL-запроса
+    
     cursor.execute('SELECT sokrash, vyz_sokr FROM vyz WHERE napravlenie = "Mark"')
     res = cursor.fetchall()
     
-    # Создаем список для кнопок
     buttons = []
     
-    # Добавляем кнопки для каждой записи в res
     for gg in res:
         buttons.append([InlineKeyboardButton(text=gg[0], callback_data=gg[1])])
     buttons.append([InlineKeyboardButton(text='Настройки поиска', callback_data='opt')])
     buttons.append([InlineKeyboardButton(text='Назад📌', callback_data='main')])
-    # Создаем клавиатуру из списка кнопок
+   
     keyboard = InlineKeyboardMarkup(inline_keyboard=buttons)
     await callback.answer('')
     await callback.message.edit_text(f'Список вузов, в которых можно обучиться на профессию Маркетолога',reply_markup=keyboard)
 
 @router.callback_query(F.data == 'Popadv1')
 async def tsh(callback: CallbackQuery):
-    # Выполнение SQL-запроса
+  
     cursor.execute('SELECT sokrash, vyz_sokr FROM vyz WHERE napravlenie = "Adv"')
     res = cursor.fetchall()
     
-    # Создаем список для кнопок
     buttons = []
     
-    # Добавляем кнопки для каждой записи в res
     for gg in res:
         buttons.append([InlineKeyboardButton(text=gg[0], callback_data=gg[1])])
     buttons.append([InlineKeyboardButton(text='Настройки поиска', callback_data='opt')])
     buttons.append([InlineKeyboardButton(text='Назад📌', callback_data='main')])
-    # Создаем клавиатуру из списка кнопок
+   
     keyboard = InlineKeyboardMarkup(inline_keyboard=buttons)
     await callback.answer('')
     await callback.message.edit_text(f'Список вузов, в которых можно обучиться на профессию Адвоката',reply_markup=keyboard)
 
 @router.callback_query(F.data == 'Popzhur1')
 async def tsh(callback: CallbackQuery):
-    # Выполнение SQL-запроса
+    
     cursor.execute('SELECT sokrash, vyz_sokr FROM vyz WHERE napravlenie = "Zhur"')
     res = cursor.fetchall()
     
-    # Создаем список для кнопок
+    
     buttons = []
     
-    # Добавляем кнопки для каждой записи в res
     for gg in res:
         buttons.append([InlineKeyboardButton(text=gg[0], callback_data=gg[1])])
     buttons.append([InlineKeyboardButton(text='Настройки поиска', callback_data='opt')])
     buttons.append([InlineKeyboardButton(text='Назад📌', callback_data='main')])
-    # Создаем клавиатуру из списка кнопок
+    
     keyboard = InlineKeyboardMarkup(inline_keyboard=buttons)
     await callback.answer('')
     await callback.message.edit_text(f'Список вузов, в которых можно обучиться на профессию Журналиста',reply_markup=keyboard)
@@ -480,19 +460,17 @@ async def tsh(callback: CallbackQuery):
 
 @router.callback_query(F.data == 'Popprep1')
 async def tsh(callback: CallbackQuery):
-    # Выполнение SQL-запроса
+    
     cursor.execute('SELECT sokrash, vyz_sokr FROM vyz WHERE napravlenie = "Prep"')
     res = cursor.fetchall()
     
-    # Создаем список для кнопок
     buttons = []
     
-    # Добавляем кнопки для каждой записи в res
     for gg in res:
         buttons.append([InlineKeyboardButton(text=gg[0], callback_data=gg[1])])
     buttons.append([InlineKeyboardButton(text='Настройки поиска', callback_data='opt')])
     buttons.append([InlineKeyboardButton(text='Назад📌', callback_data='main')])
-    # Создаем клавиатуру из списка кнопок
+    
     keyboard = InlineKeyboardMarkup(inline_keyboard=buttons)
     await callback.answer('')
     await callback.message.edit_text(f'Список вузов, в которых можно обучиться на профессию Преподователь',reply_markup=keyboard)
