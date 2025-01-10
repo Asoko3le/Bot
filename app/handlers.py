@@ -305,7 +305,7 @@ async def tsh(callback: CallbackQuery):
     conn.commit()
     cursor.execute('SELECT gorin1, gorin2, gorin3 FROM vyzf WHERE user_id = ?',(user_id,))
     trr = cursor.fetchone()
-    print(trr)
+    
     cursor.execute('SELECT sokrash, vyz_sokr FROM vyz WHERE napravlenie = "Econ" AND (gorodind = ? OR gorodind = ? OR gorodind = ?)', 
                (trr[0], trr[1], trr[2]))
     res = cursor.fetchall()
