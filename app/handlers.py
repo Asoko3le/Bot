@@ -167,6 +167,12 @@ async def tsh(callback: CallbackQuery):
 
 @router.callback_query(F.data=='Vyzi2')
 async def tsh(callback: CallbackQuery):
+    user_id = callback.from_user.id
+    cursor.execute('UPDATE vyzf SET gorin1 = NULL WHERE user_id = ?',(user_id,) )
+    cursor.execute('UPDATE vyzf SET gorin2 = NULL WHERE user_id = ?',(user_id,) )
+    cursor.execute('UPDATE vyzf SET gorin3 = NULL WHERE user_id = ?',(user_id,) )
+    cursor.execute('INSERT OR IGNORE INTO vyzf(user_id) VALUES (?)',(user_id,))
+    conn.commit()
     await callback.answer('')
     await callback.message.edit_text('Выберите направление для подбора соотвествующих вузов',reply_markup=kb.Vyzi2)
 
@@ -200,6 +206,11 @@ async def tsh(callback: CallbackQuery):
     cursor.execute(f'SELECT Vyzteg FROM directions WHERE code = ?',(nap,))
     aba1 = cursor.fetchone()
     aba=aba1[0]
+    cursor.execute('UPDATE vyzf SET gorin1 = NULL WHERE user_id = ?',(user_id,) )
+    cursor.execute('UPDATE vyzf SET gorin2 = NULL WHERE user_id = ?',(user_id,) )
+    cursor.execute('UPDATE vyzf SET gorin3 = NULL WHERE user_id = ?',(user_id,) )
+    cursor.execute('INSERT OR IGNORE INTO vyzf(user_id) VALUES (?)',(user_id,))
+    conn.commit()
     podrob = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Вузы по направлению🏫', callback_data=f'{aba}')],
     [InlineKeyboardButton(text='Бесплатные курсы📚', url = 'https://dopobr.petersburgedu.ru')],
@@ -229,89 +240,144 @@ async def tsh(callback: CallbackQuery):
 
 # region Vyz
 
-@router.callback_query(F.data == 'Popinz1')
+@router.callback_query(F.data.in_(['PopInz1','Popinz1']))
 async def tsh(callback: CallbackQuery):
+    user_id = callback.from_user.id
+    cursor.execute('SELECT napravlenie FROM users WHERE user_id = ?',(user_id,))
+    tr = cursor.fetchone()
+    cursor.execute('INSERT OR REPLACE INTO users(user_id, napravlenie, vyzn) VALUES (?, ?, ?)',(user_id, tr[0],"Inz",))
+    conn.commit()
+    cursor.execute('SELECT gorin1, gorin2, gorin3 FROM vyzf WHERE user_id = ?',(user_id,))
+    trr = cursor.fetchone()
     
-    cursor.execute('SELECT sokrash, vyz_sokr FROM vyz WHERE napravlenie = "Inz"')
+    cursor.execute('SELECT sokrash, vyz_sokr FROM vyz WHERE napravlenie = "Inz" AND (gorodind = ? OR gorodind = ? OR gorodind = ?)', 
+               (trr[0], trr[1], trr[2]))
     res = cursor.fetchall()
-    
+    unres = []
+    if res == unres:
+        cursor.execute('SELECT sokrash, vyz_sokr FROM vyz WHERE napravlenie = "Inz"')
+        res = cursor.fetchall()
     buttons = []
     
     for gg in res:
         buttons.append([InlineKeyboardButton(text=gg[0], callback_data=gg[1])])
-    buttons.append([InlineKeyboardButton(text='Настройки поиска', callback_data='opt')])
+    buttons.append([InlineKeyboardButton(text='Настройки поиска⚙️', callback_data='opt')])
     buttons.append([InlineKeyboardButton(text='Назад📌', callback_data='main')])
     
     keyboard = InlineKeyboardMarkup(inline_keyboard=buttons)
     await callback.answer('')
     await callback.message.edit_text('Список вузов, в которых можно обучиться на профессию инженера',reply_markup=keyboard)
 
-@router.callback_query(F.data == 'Popit1')
+@router.callback_query(F.data.in_(['PopIt1','Popit1']))
 async def tsh(callback: CallbackQuery):
+    user_id = callback.from_user.id
+    cursor.execute('SELECT napravlenie FROM users WHERE user_id = ?',(user_id,))
+    tr = cursor.fetchone()
+    cursor.execute('INSERT OR REPLACE INTO users(user_id, napravlenie, vyzn) VALUES (?, ?, ?)',(user_id, tr[0],"It",))
+    conn.commit()
+    cursor.execute('SELECT gorin1, gorin2, gorin3 FROM vyzf WHERE user_id = ?',(user_id,))
+    trr = cursor.fetchone()
     
-    cursor.execute('SELECT sokrash, vyz_sokr FROM vyz WHERE napravlenie = "It"')
+    cursor.execute('SELECT sokrash, vyz_sokr FROM vyz WHERE napravlenie = "It" AND (gorodind = ? OR gorodind = ? OR gorodind = ?)', 
+               (trr[0], trr[1], trr[2]))
     res = cursor.fetchall()
-    
+    unres = []
+    if res == unres:
+        cursor.execute('SELECT sokrash, vyz_sokr FROM vyz WHERE napravlenie = "Inz"')
+        res = cursor.fetchall()
     buttons = []
     
     for gg in res:
         buttons.append([InlineKeyboardButton(text=gg[0], callback_data=gg[1])])
-    buttons.append([InlineKeyboardButton(text='Настройки поиска', callback_data='opt')])
+    buttons.append([InlineKeyboardButton(text='Настройки поиска⚙️', callback_data='opt')])
     buttons.append([InlineKeyboardButton(text='Назад📌', callback_data='main')])
     
     keyboard = InlineKeyboardMarkup(inline_keyboard=buttons)
     await callback.answer('')
     await callback.message.edit_text(f'Список вузов, в которых можно обучиться на профессию It-специалиста',reply_markup=keyboard)
 
-@router.callback_query(F.data == 'Popecon1')
+@router.callback_query(F.data.in_(['PopEcon1','Popecon1']))
 async def tsh(callback: CallbackQuery):
-    
-    cursor.execute('SELECT sokrash, vyz_sokr FROM vyz WHERE napravlenie = "Econ"')
+    user_id = callback.from_user.id
+    cursor.execute('SELECT napravlenie FROM users WHERE user_id = ?',(user_id,))
+    tr = cursor.fetchone()
+    cursor.execute('INSERT OR REPLACE INTO users(user_id, napravlenie, vyzn) VALUES (?, ?, ?)',(user_id, tr[0],"Econ",))
+    conn.commit()
+    cursor.execute('SELECT gorin1, gorin2, gorin3 FROM vyzf WHERE user_id = ?',(user_id,))
+    trr = cursor.fetchone()
+    print(trr)
+    cursor.execute('SELECT sokrash, vyz_sokr FROM vyz WHERE napravlenie = "Econ" AND (gorodind = ? OR gorodind = ? OR gorodind = ?)', 
+               (trr[0], trr[1], trr[2]))
     res = cursor.fetchall()
-    
+    unres = []
+    if res == unres:
+        cursor.execute('SELECT sokrash, vyz_sokr FROM vyz WHERE napravlenie = "Inz"')
+        res = cursor.fetchall()
     buttons = []
     
     for gg in res:
         buttons.append([InlineKeyboardButton(text=gg[0], callback_data=gg[1])])
-    buttons.append([InlineKeyboardButton(text='Настройки поиска', callback_data='opt')])
+    buttons.append([InlineKeyboardButton(text='Настройки поиска⚙️', callback_data='opt')])
     buttons.append([InlineKeyboardButton(text='Назад📌', callback_data='main')])
     
     keyboard = InlineKeyboardMarkup(inline_keyboard=buttons)
     await callback.answer('')
     await callback.message.edit_text(f'Список вузов, в которых можно обучиться на профессию Экономиста',reply_markup=keyboard)
 
-@router.callback_query(F.data == 'Popfin1')
+@router.callback_query(F.data.in_(['PopFin1','Popfin1']))
 async def tsh(callback: CallbackQuery):
-   
-    cursor.execute('SELECT sokrash, vyz_sokr FROM vyz WHERE napravlenie = "Fin"')
-    res = cursor.fetchall()
+    user_id = callback.from_user.id
+    cursor.execute('SELECT napravlenie FROM users WHERE user_id = ?',(user_id,))
+    tr = cursor.fetchone()
+    cursor.execute('INSERT OR REPLACE INTO users(user_id, napravlenie, vyzn) VALUES (?, ?, ?)',(user_id, tr[0],"Fin",))
+    conn.commit()
+    cursor.execute('SELECT gorin1, gorin2, gorin3 FROM vyzf WHERE user_id = ?',(user_id,))
+    trr = cursor.fetchone()
     
+    cursor.execute('SELECT sokrash, vyz_sokr FROM vyz WHERE napravlenie = "Fin" AND (gorodind = ? OR gorodind = ? OR gorodind = ?)', 
+               (trr[0], trr[1], trr[2]))
+    res = cursor.fetchall()
+    unres = []
+    if res == unres:
+        cursor.execute('SELECT sokrash, vyz_sokr FROM vyz WHERE napravlenie = "Inz"')
+        res = cursor.fetchall()
     
     buttons = []
     
     
     for gg in res:
         buttons.append([InlineKeyboardButton(text=gg[0], callback_data=gg[1])])
-    buttons.append([InlineKeyboardButton(text='Настройки поиска', callback_data='opt')])
+    buttons.append([InlineKeyboardButton(text='Настройки поиска⚙️', callback_data='opt')])
     buttons.append([InlineKeyboardButton(text='Назад📌', callback_data='main')])
     
     keyboard = InlineKeyboardMarkup(inline_keyboard=buttons)
     await callback.answer('')
     await callback.message.edit_text(f'Список вузов, в которых можно обучиться на профессию Финансиста',reply_markup=keyboard)
 
-@router.callback_query(F.data == 'Popbuh1')
+@router.callback_query(F.data.in_(['PopBuh1','Popbuh1']))
 async def tsh(callback: CallbackQuery):
+    user_id = callback.from_user.id
+    cursor.execute('SELECT napravlenie FROM users WHERE user_id = ?',(user_id,))
+    tr = cursor.fetchone()
+    cursor.execute('INSERT OR REPLACE INTO users(user_id, napravlenie, vyzn) VALUES (?, ?, ?)',(user_id, tr[0],"Buh",))
+    conn.commit()
+    cursor.execute('SELECT gorin1, gorin2, gorin3 FROM vyzf WHERE user_id = ?',(user_id,))
+    trr = cursor.fetchone()
     
-    cursor.execute('SELECT sokrash, vyz_sokr FROM vyz WHERE napravlenie = "Buh"')
+    cursor.execute('SELECT sokrash, vyz_sokr FROM vyz WHERE napravlenie = "Buh" AND (gorodind = ? OR gorodind = ? OR gorodind = ?)', 
+               (trr[0], trr[1], trr[2]))
     res = cursor.fetchall()
-    
+    unres = []
+    if res == unres:
+        cursor.execute('SELECT sokrash, vyz_sokr FROM vyz WHERE napravlenie = "Inz"')
+        res = cursor.fetchall()
     
     buttons = []
     
     
     for gg in res:
         buttons.append([InlineKeyboardButton(text=gg[0], callback_data=gg[1])])
-    buttons.append([InlineKeyboardButton(text='Настройки поиска', callback_data='opt')])
+    buttons.append([InlineKeyboardButton(text='Настройки поиска⚙️', callback_data='opt')])
     buttons.append([InlineKeyboardButton(text='Назад📌', callback_data='main')])
    
     keyboard = InlineKeyboardMarkup(inline_keyboard=buttons)
@@ -319,138 +385,226 @@ async def tsh(callback: CallbackQuery):
     await callback.message.edit_text(f'Список вузов, в которых можно обучиться на профессию Бухгалтер',reply_markup=keyboard)
 
 
-@router.callback_query(F.data == 'Pophim1')
+@router.callback_query(F.data.in_(['Pophim1','PopHim1']))
 async def tsh(callback: CallbackQuery):
+    user_id = callback.from_user.id
+    cursor.execute('SELECT napravlenie FROM users WHERE user_id = ?',(user_id,))
+    tr = cursor.fetchone()
+    cursor.execute('INSERT OR REPLACE INTO users(user_id, napravlenie, vyzn) VALUES (?, ?, ?)',(user_id, tr[0],"Him",))
+    conn.commit()
+    cursor.execute('SELECT gorin1, gorin2, gorin3 FROM vyzf WHERE user_id = ?',(user_id,))
+    trr = cursor.fetchone()
     
-    cursor.execute('SELECT sokrash, vyz_sokr FROM vyz WHERE napravlenie = "Him"')
+    cursor.execute('SELECT sokrash, vyz_sokr FROM vyz WHERE napravlenie = "Him" AND (gorodind = ? OR gorodind = ? OR gorodind = ?)', 
+               (trr[0], trr[1], trr[2]))
     res = cursor.fetchall()
-    
+    unres = []
+    if res == unres:
+        cursor.execute('SELECT sokrash, vyz_sokr FROM vyz WHERE napravlenie = "Inz"')
+        res = cursor.fetchall()
    
     buttons = []
     
     for gg in res:
         buttons.append([InlineKeyboardButton(text=gg[0], callback_data=gg[1])])
-    buttons.append([InlineKeyboardButton(text='Настройки поиска', callback_data='opt')])
+    buttons.append([InlineKeyboardButton(text='Настройки поиска⚙️', callback_data='opt')])
     buttons.append([InlineKeyboardButton(text='Назад📌', callback_data='main')])
   
     keyboard = InlineKeyboardMarkup(inline_keyboard=buttons)
     await callback.answer('')
     await callback.message.edit_text(f'Список вузов, в которых можно обучиться на профессию Химика',reply_markup=keyboard)
 
-@router.callback_query(F.data == 'Popecol1')
+@router.callback_query(F.data.in_(['PopEcol1','Popecol1']))
 async def tsh(callback: CallbackQuery):
+    user_id = callback.from_user.id
+    cursor.execute('SELECT napravlenie FROM users WHERE user_id = ?',(user_id,))
+    tr = cursor.fetchone()
+    cursor.execute('INSERT OR REPLACE INTO users(user_id, napravlenie, vyzn) VALUES (?, ?, ?)',(user_id, tr[0],"Ecol",))
+    conn.commit()
+    cursor.execute('SELECT gorin1, gorin2, gorin3 FROM vyzf WHERE user_id = ?',(user_id,))
+    trr = cursor.fetchone()
     
-    cursor.execute('SELECT sokrash, vyz_sokr FROM vyz WHERE napravlenie = "Ecol"')
+    cursor.execute('SELECT sokrash, vyz_sokr FROM vyz WHERE napravlenie = "Ecol" AND (gorodind = ? OR gorodind = ? OR gorodind = ?)', 
+               (trr[0], trr[1], trr[2]))
     res = cursor.fetchall()
-    
+    unres = []
+    if res == unres:
+        cursor.execute('SELECT sokrash, vyz_sokr FROM vyz WHERE napravlenie = "Inz"')
+        res = cursor.fetchall()
     buttons = []
     
     for gg in res:
         buttons.append([InlineKeyboardButton(text=gg[0], callback_data=gg[1])])
-    buttons.append([InlineKeyboardButton(text='Настройки поиска', callback_data='opt')])
+    buttons.append([InlineKeyboardButton(text='Настройки поиска⚙️', callback_data='opt')])
     buttons.append([InlineKeyboardButton(text='Назад📌', callback_data='main')])
     
     keyboard = InlineKeyboardMarkup(inline_keyboard=buttons)
     await callback.answer('')
     await callback.message.edit_text(f'Список вузов, в которых можно обучиться на профессию Эколога',reply_markup=keyboard)
 
-@router.callback_query(F.data == 'Poppsihoter1')
+@router.callback_query(F.data.in_(['Poppsihoter1','PopPsihoter1']))
 async def tsh(callback: CallbackQuery):
+    user_id = callback.from_user.id
+    cursor.execute('SELECT napravlenie FROM users WHERE user_id = ?',(user_id,))
+    tr = cursor.fetchone()
+    cursor.execute('INSERT OR REPLACE INTO users(user_id, napravlenie, vyzn) VALUES (?, ?, ?)',(user_id, tr[0],"Psihoter",))
+    conn.commit()
+    cursor.execute('SELECT gorin1, gorin2, gorin3 FROM vyzf WHERE user_id = ?',(user_id,))
+    trr = cursor.fetchone()
     
-    cursor.execute('SELECT sokrash, vyz_sokr FROM vyz WHERE napravlenie = "Psihoter"')
+    cursor.execute('SELECT sokrash, vyz_sokr FROM vyz WHERE napravlenie = "Psihoter" AND (gorodind = ? OR gorodind = ? OR gorodind = ?)', 
+               (trr[0], trr[1], trr[2]))
     res = cursor.fetchall()
-    
+    unres = []
+    if res == unres:
+        cursor.execute('SELECT sokrash, vyz_sokr FROM vyz WHERE napravlenie = "Inz"')
+        res = cursor.fetchall()
     buttons = []
     
     for gg in res:
         buttons.append([InlineKeyboardButton(text=gg[0], callback_data=gg[1])])
-    buttons.append([InlineKeyboardButton(text='Настройки поиска', callback_data='opt')])
+    buttons.append([InlineKeyboardButton(text='Настройки поиска⚙️', callback_data='opt')])
     buttons.append([InlineKeyboardButton(text='Назад📌', callback_data='main')])
    
     keyboard = InlineKeyboardMarkup(inline_keyboard=buttons)
     await callback.answer('')
     await callback.message.edit_text(f'Список вузов, в которых можно обучиться на профессию Психотерапевта',reply_markup=keyboard)
 
-@router.callback_query(F.data == 'Popall1')
+@router.callback_query(F.data.in_(['Popall1','PopAll1']))
 async def tsh(callback: CallbackQuery):
+    user_id = callback.from_user.id
+    cursor.execute('SELECT napravlenie FROM users WHERE user_id = ?',(user_id,))
+    tr = cursor.fetchone()
+    cursor.execute('INSERT OR REPLACE INTO users(user_id, napravlenie, vyzn) VALUES (?, ?, ?)',(user_id, tr[0],"All",))
+    conn.commit()
+    cursor.execute('SELECT gorin1, gorin2, gorin3 FROM vyzf WHERE user_id = ?',(user_id,))
+    trr = cursor.fetchone()
     
-    cursor.execute('SELECT sokrash, vyz_sokr FROM vyz WHERE napravlenie = "All"')
+    cursor.execute('SELECT sokrash, vyz_sokr FROM vyz WHERE napravlenie = "All" AND (gorodind = ? OR gorodind = ? OR gorodind = ?)', 
+               (trr[0], trr[1], trr[2]))
     res = cursor.fetchall()
-    
+    unres = []
+    if res == unres:
+        cursor.execute('SELECT sokrash, vyz_sokr FROM vyz WHERE napravlenie = "Inz"')
+        res = cursor.fetchall()
     buttons = []
     
     for gg in res:
         buttons.append([InlineKeyboardButton(text=gg[0], callback_data=gg[1])])
-    buttons.append([InlineKeyboardButton(text='Настройки поиска', callback_data='opt')])
+    buttons.append([InlineKeyboardButton(text='Настройки поиска⚙️', callback_data='opt')])
     buttons.append([InlineKeyboardButton(text='Назад📌', callback_data='main')])
     
     keyboard = InlineKeyboardMarkup(inline_keyboard=buttons)
     await callback.answer('')
     await callback.message.edit_text(f'Список вузов, в которых можно обучиться на профессию Аллерголога',reply_markup=keyboard)
 
-@router.callback_query(F.data == 'Popbot1')
+@router.callback_query(F.data.in_(['PopBot1','Popbot1']))
 async def tsh(callback: CallbackQuery):
+    user_id = callback.from_user.id
+    cursor.execute('SELECT napravlenie FROM users WHERE user_id = ?',(user_id,))
+    tr = cursor.fetchone()
+    cursor.execute('INSERT OR REPLACE INTO users(user_id, napravlenie, vyzn) VALUES (?, ?, ?)',(user_id, tr[0],"Bot",))
+    conn.commit()
+    cursor.execute('SELECT gorin1, gorin2, gorin3 FROM vyzf WHERE user_id = ?',(user_id,))
+    trr = cursor.fetchone()
     
-    cursor.execute('SELECT sokrash, vyz_sokr FROM vyz WHERE napravlenie = "Bot"')
+    cursor.execute('SELECT sokrash, vyz_sokr FROM vyz WHERE napravlenie = "Bot" AND (gorodind = ? OR gorodind = ? OR gorodind = ?)', 
+               (trr[0], trr[1], trr[2]))
     res = cursor.fetchall()
-    
+    unres = []
+    if res == unres:
+        cursor.execute('SELECT sokrash, vyz_sokr FROM vyz WHERE napravlenie = "Inz"')
+        res = cursor.fetchall()
     buttons = []
     
     for gg in res:
         buttons.append([InlineKeyboardButton(text=gg[0], callback_data=gg[1])])
-    buttons.append([InlineKeyboardButton(text='Настройки поиска', callback_data='opt')])
+    buttons.append([InlineKeyboardButton(text='Настройки поиска⚙️', callback_data='opt')])
     buttons.append([InlineKeyboardButton(text='Назад📌', callback_data='main')])
     
     keyboard = InlineKeyboardMarkup(inline_keyboard=buttons)
     await callback.answer('')
     await callback.message.edit_text(f'Список вузов, в которых можно обучиться на профессию Ботаника',reply_markup=keyboard)
 
-@router.callback_query(F.data == 'Popmark1')
+@router.callback_query(F.data.in_(['PopMark1','Popmark1']))
 async def tsh(callback: CallbackQuery):
+    user_id = callback.from_user.id
+    cursor.execute('SELECT napravlenie FROM users WHERE user_id = ?',(user_id,))
+    tr = cursor.fetchone()
+    cursor.execute('INSERT OR REPLACE INTO users(user_id, napravlenie, vyzn) VALUES (?, ?, ?)',(user_id, tr[0],"Mark",))
+    conn.commit()
+    cursor.execute('SELECT gorin1, gorin2, gorin3 FROM vyzf WHERE user_id = ?',(user_id,))
+    trr = cursor.fetchone()
     
-    cursor.execute('SELECT sokrash, vyz_sokr FROM vyz WHERE napravlenie = "Mark"')
+    cursor.execute('SELECT sokrash, vyz_sokr FROM vyz WHERE napravlenie = "Mark" AND (gorodind = ? OR gorodind = ? OR gorodind = ?)', 
+               (trr[0], trr[1], trr[2]))
     res = cursor.fetchall()
-    
+    unres = []
+    if res == unres:
+        cursor.execute('SELECT sokrash, vyz_sokr FROM vyz WHERE napravlenie = "Inz"')
+        res = cursor.fetchall()
     buttons = []
     
     for gg in res:
         buttons.append([InlineKeyboardButton(text=gg[0], callback_data=gg[1])])
-    buttons.append([InlineKeyboardButton(text='Настройки поиска', callback_data='opt')])
+    buttons.append([InlineKeyboardButton(text='Настройки поиска⚙️', callback_data='opt')])
     buttons.append([InlineKeyboardButton(text='Назад📌', callback_data='main')])
    
     keyboard = InlineKeyboardMarkup(inline_keyboard=buttons)
     await callback.answer('')
     await callback.message.edit_text(f'Список вузов, в которых можно обучиться на профессию Маркетолога',reply_markup=keyboard)
 
-@router.callback_query(F.data == 'Popadv1')
+@router.callback_query(F.data.in_(['PopAdv1','Popadv1']))
 async def tsh(callback: CallbackQuery):
-  
-    cursor.execute('SELECT sokrash, vyz_sokr FROM vyz WHERE napravlenie = "Adv"')
-    res = cursor.fetchall()
+    user_id = callback.from_user.id
+    cursor.execute('SELECT napravlenie FROM users WHERE user_id = ?',(user_id,))
+    tr = cursor.fetchone()
+    cursor.execute('INSERT OR REPLACE INTO users(user_id, napravlenie, vyzn) VALUES (?, ?, ?)',(user_id, tr[0],"Adv",))
+    conn.commit()
+    cursor.execute('SELECT gorin1, gorin2, gorin3 FROM vyzf WHERE user_id = ?',(user_id,))
+    trr = cursor.fetchone()
     
+    cursor.execute('SELECT sokrash, vyz_sokr FROM vyz WHERE napravlenie = "Adv" AND (gorodind = ? OR gorodind = ? OR gorodind = ?)', 
+               (trr[0], trr[1], trr[2]))
+    res = cursor.fetchall()
+    unres = []
+    if res == unres:
+        cursor.execute('SELECT sokrash, vyz_sokr FROM vyz WHERE napravlenie = "Inz"')
+        res = cursor.fetchall()
     buttons = []
     
     for gg in res:
         buttons.append([InlineKeyboardButton(text=gg[0], callback_data=gg[1])])
-    buttons.append([InlineKeyboardButton(text='Настройки поиска', callback_data='opt')])
+    buttons.append([InlineKeyboardButton(text='Настройки поиска⚙️', callback_data='opt')])
     buttons.append([InlineKeyboardButton(text='Назад📌', callback_data='main')])
    
     keyboard = InlineKeyboardMarkup(inline_keyboard=buttons)
     await callback.answer('')
     await callback.message.edit_text(f'Список вузов, в которых можно обучиться на профессию Адвоката',reply_markup=keyboard)
 
-@router.callback_query(F.data == 'Popzhur1')
+@router.callback_query(F.data.in_(['PopZhur1','Popzhur1']))
 async def tsh(callback: CallbackQuery):
+    user_id = callback.from_user.id
+    cursor.execute('SELECT napravlenie FROM users WHERE user_id = ?',(user_id,))
+    tr = cursor.fetchone()
+    cursor.execute('INSERT OR REPLACE INTO users(user_id, napravlenie, vyzn) VALUES (?, ?, ?)',(user_id, tr[0],"Zhur",))
+    conn.commit()
+    cursor.execute('SELECT gorin1, gorin2, gorin3 FROM vyzf WHERE user_id = ?',(user_id,))
+    trr = cursor.fetchone()
     
-    cursor.execute('SELECT sokrash, vyz_sokr FROM vyz WHERE napravlenie = "Zhur"')
+    cursor.execute('SELECT sokrash, vyz_sokr FROM vyz WHERE napravlenie = "Zhur" AND (gorodind = ? OR gorodind = ? OR gorodind = ?)', 
+               (trr[0], trr[1], trr[2]))
     res = cursor.fetchall()
-    
+    unres = []
+    if res == unres:
+        cursor.execute('SELECT sokrash, vyz_sokr FROM vyz WHERE napravlenie = "Inz"')
+        res = cursor.fetchall()
     
     buttons = []
     
     for gg in res:
         buttons.append([InlineKeyboardButton(text=gg[0], callback_data=gg[1])])
-    buttons.append([InlineKeyboardButton(text='Настройки поиска', callback_data='opt')])
+    buttons.append([InlineKeyboardButton(text='Настройки поиска⚙️', callback_data='opt')])
     buttons.append([InlineKeyboardButton(text='Назад📌', callback_data='main')])
     
     keyboard = InlineKeyboardMarkup(inline_keyboard=buttons)
@@ -458,17 +612,29 @@ async def tsh(callback: CallbackQuery):
     await callback.message.edit_text(f'Список вузов, в которых можно обучиться на профессию Журналиста',reply_markup=keyboard)
 
 
-@router.callback_query(F.data == 'Popprep1')
+@router.callback_query(F.data.in_(['Popprep1', 'PopPrep1']))
 async def tsh(callback: CallbackQuery):
+    user_id = callback.from_user.id
+    cursor.execute('SELECT napravlenie FROM users WHERE user_id = ?',(user_id,))
+    tr = cursor.fetchone()
+    cursor.execute('INSERT OR REPLACE INTO users(user_id, napravlenie, vyzn) VALUES (?, ?, ?)',(user_id, tr[0],"Prep",))
+    conn.commit()
+    cursor.execute('SELECT gorin1, gorin2, gorin3 FROM vyzf WHERE user_id = ?',(user_id,))
+    trr = cursor.fetchone()
     
-    cursor.execute('SELECT sokrash, vyz_sokr FROM vyz WHERE napravlenie = "Prep"')
+    cursor.execute('SELECT sokrash, vyz_sokr FROM vyz WHERE napravlenie = "Prep" AND (gorodind = ? OR gorodind = ? OR gorodind = ?)', 
+               (trr[0], trr[1], trr[2]))
     res = cursor.fetchall()
+    unres = []
+    if res == unres:
+        cursor.execute('SELECT sokrash, vyz_sokr FROM vyz WHERE napravlenie = "Inz"')
+        res = cursor.fetchall()
     
     buttons = []
     
     for gg in res:
         buttons.append([InlineKeyboardButton(text=gg[0], callback_data=gg[1])])
-    buttons.append([InlineKeyboardButton(text='Настройки поиска', callback_data='opt')])
+    buttons.append([InlineKeyboardButton(text='Настройки поиска⚙️', callback_data='opt')])
     buttons.append([InlineKeyboardButton(text='Назад📌', callback_data='main')])
     
     keyboard = InlineKeyboardMarkup(inline_keyboard=buttons)
@@ -490,10 +656,13 @@ async def tsh(callback: CallbackQuery):
 
 @router.callback_query(F.data=='opt')
 async def tsh(callback: CallbackQuery):
+    user_id = callback.from_user.id
+
+    cursor.execute('SELECT vyzn FROM users WHERE user_id = ?',(user_id,))
+    sik = cursor.fetchone()
     opt2 = InlineKeyboardMarkup(inline_keyboard=[
-    [InlineKeyboardButton(text='Поиск по городу', callback_data= 'optcity')],
-    [InlineKeyboardButton(text='Поиск по проходному балу', callback_data='optpp')],
-    [InlineKeyboardButton(text='Назад📌', callback_data='main')],
+    [InlineKeyboardButton(text='Поиск по городу🏢', callback_data= 'optcity')],
+    [InlineKeyboardButton(text='Назад📌', callback_data=f'Pop{sik[0]}1')],
 ])
     await callback.answer('')
     await callback.message.edit_text('Настройки поиска:',reply_markup=opt2)
@@ -501,31 +670,645 @@ async def tsh(callback: CallbackQuery):
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-@router.callback_query(F.data=='optcity')
+@router.callback_query(F.data == 'optcity')
 async def tsh(callback: CallbackQuery):
-    cursor.execute('SELECT DISTINCT gorod FROM vyz WHERE napravlenie = "Inz"')
+    user_id = callback.from_user.id
+    
+
+    cursor.execute('SELECT vyzn FROM users WHERE user_id = ?',(user_id,))
+    sik = cursor.fetchone()
+   
+    cursor.execute(f'SELECT DISTINCT gorod, gorodind FROM vyz WHERE napravlenie = "{sik[0]}"')
     res = cursor.fetchall()
     
-    # Создаем список для кнопок
+
+
+
+
+
+
+
+
+
     buttons1 = []
     
     # Добавляем кнопки для каждой записи в res
     for gg in res:
-        buttons1.append([InlineKeyboardButton(text=gg[0], callback_data=f'op{gg[0]}')])
-    buttons1.append([InlineKeyboardButton(text='Назад📌', callback_data='main')])
+        cursor.execute('SELECT gorin1, gorin2, gorin3 FROM vyzf WHERE user_id = ?',(user_id,))
+        tot = cursor.fetchone()
+        
+        if tot[0] == gg[1] or tot[1] == gg[1] or tot[2] == gg[1]:
+            buttons1.append([InlineKeyboardButton(text=f'{gg[0]}✅', callback_data=f'op{gg[1]}')])
+        else:
+            buttons1.append([InlineKeyboardButton(text=f'{gg[0]}', callback_data=f'op{gg[1]}')])
+    buttons1.append([InlineKeyboardButton(text='Назад📌', callback_data=f'Pop{sik[0]}1')])
+
+    keyboard = InlineKeyboardMarkup(inline_keyboard=buttons1)
     await callback.answer('')
-    await callback.message.edit_text('Выберите город для поиска',reply_markup=buttons1)
+    await callback.message.edit_text('Выберите город для поиска',reply_markup=keyboard)
+
+
+
+
+
+@router.callback_query(F.data == 'opmsk')
+async def tsh(callback: CallbackQuery):
+    user_id = callback.from_user.id
+    heh = 'msk'
+    cursor.execute('SELECT vyzn FROM users WHERE user_id = ?',(user_id,))
+    sik = cursor.fetchone()
+    
+    cursor.execute(f'SELECT DISTINCT gorod, gorodind FROM vyz WHERE napravlenie = "{sik[0]}"')
+    res = cursor.fetchall()
+    
+
+    cursor.execute('SELECT gorin1, gorin2, gorin3 FROM vyzf WHERE user_id = ?',(user_id,))
+    tot = cursor.fetchone()
+    if tot[0] == f'{heh}':
+        cursor.execute('UPDATE vyzf SET gorin1 = NULL WHERE user_id = ?',(user_id,) )
+    elif tot[1] == f'{heh}':
+        cursor.execute('UPDATE vyzf SET gorin2 = NULL WHERE user_id = ?',(user_id,) )
+    elif tot[2] == f'{heh}':
+        cursor.execute('UPDATE vyzf SET gorin3 = NULL WHERE user_id = ?',(user_id,) )
+    else:
+        if tot[0] is None:
+            cursor.execute(f'UPDATE vyzf SET gorin1 = "{heh}" WHERE user_id = ?', (user_id,))
+        elif tot[1] is None:
+            cursor.execute(f'UPDATE vyzf SET gorin2 = "{heh}" WHERE user_id = ?', (user_id,))
+        elif tot[2] is None:
+            cursor.execute(f'UPDATE vyzf SET gorin3 = "{heh}" WHERE user_id = ?', (user_id,))
+
+
+    conn.commit()
+    buttons1 = []
+    
+    # Добавляем кнопки для каждой записи в res
+    for gg in res:
+        cursor.execute('SELECT gorin1, gorin2, gorin3 FROM vyzf WHERE user_id = ?',(user_id,))
+        tot = cursor.fetchone()
+        if tot[0] == gg[1] or tot[1] == gg[1] or tot[2] == gg[1]:
+            buttons1.append([InlineKeyboardButton(text=f'{gg[0]}✅', callback_data=f'op{gg[1]}')])
+        else:
+            buttons1.append([InlineKeyboardButton(text=f'{gg[0]}', callback_data=f'op{gg[1]}')])
+    buttons1.append([InlineKeyboardButton(text='Назад📌', callback_data=f'Pop{sik[0]}1')])
+
+    keyboard = InlineKeyboardMarkup(inline_keyboard=buttons1)
+    await callback.answer('')
+    await callback.message.edit_text('Выберите город для поиска',reply_markup=keyboard)
+
+
+
+
+@router.callback_query(F.data == 'opspb')
+async def tsh(callback: CallbackQuery):
+    user_id = callback.from_user.id
+    heh = 'spb'
+    cursor.execute('SELECT vyzn FROM users WHERE user_id = ?',(user_id,))
+    sik = cursor.fetchone()
+    
+    cursor.execute(f'SELECT DISTINCT gorod, gorodind FROM vyz WHERE napravlenie = "{sik[0]}"')
+    res = cursor.fetchall()
+    
+
+    cursor.execute('SELECT gorin1, gorin2, gorin3 FROM vyzf WHERE user_id = ?',(user_id,))
+    tot = cursor.fetchone()
+    if tot[0] == f'{heh}':
+        cursor.execute('UPDATE vyzf SET gorin1 = NULL WHERE user_id = ?',(user_id,) )
+    elif tot[1] == f'{heh}':
+        cursor.execute('UPDATE vyzf SET gorin2 = NULL WHERE user_id = ?',(user_id,) )
+    elif tot[2] == f'{heh}':
+        cursor.execute('UPDATE vyzf SET gorin3 = NULL WHERE user_id = ?',(user_id,) )
+    else:
+        if tot[0] is None:
+            cursor.execute(f'UPDATE vyzf SET gorin1 = "{heh}" WHERE user_id = ?', (user_id,))
+        elif tot[1] is None:
+            cursor.execute(f'UPDATE vyzf SET gorin2 = "{heh}" WHERE user_id = ?', (user_id,))
+        elif tot[2] is None:
+            cursor.execute(f'UPDATE vyzf SET gorin3 = "{heh}" WHERE user_id = ?', (user_id,))
+
+
+    conn.commit()
+    buttons1 = []
+    
+    # Добавляем кнопки для каждой записи в res
+    for gg in res:
+        cursor.execute('SELECT gorin1, gorin2, gorin3 FROM vyzf WHERE user_id = ?',(user_id,))
+        tot = cursor.fetchone()
+        if tot[0] == gg[1] or tot[1] == gg[1] or tot[2] == gg[1]:
+            buttons1.append([InlineKeyboardButton(text=f'{gg[0]}✅', callback_data=f'op{gg[1]}')])
+        else:
+            buttons1.append([InlineKeyboardButton(text=f'{gg[0]}', callback_data=f'op{gg[1]}')])
+    buttons1.append([InlineKeyboardButton(text='Назад📌', callback_data=f'Pop{sik[0]}1')])
+
+    keyboard = InlineKeyboardMarkup(inline_keyboard=buttons1)
+    await callback.answer('')
+    await callback.message.edit_text('Выберите город для поиска',reply_markup=keyboard)
+
+@router.callback_query(F.data == 'opkzn')
+async def tsh(callback: CallbackQuery):
+    user_id = callback.from_user.id
+    heh = 'kzn'
+    cursor.execute('SELECT vyzn FROM users WHERE user_id = ?',(user_id,))
+    sik = cursor.fetchone()
+    
+    cursor.execute(f'SELECT DISTINCT gorod, gorodind FROM vyz WHERE napravlenie = "{sik[0]}"')
+    res = cursor.fetchall()
+    
+
+    cursor.execute('SELECT gorin1, gorin2, gorin3 FROM vyzf WHERE user_id = ?',(user_id,))
+    tot = cursor.fetchone()
+    if tot[0] == f'{heh}':
+        cursor.execute('UPDATE vyzf SET gorin1 = NULL WHERE user_id = ?',(user_id,) )
+    elif tot[1] == f'{heh}':
+        cursor.execute('UPDATE vyzf SET gorin2 = NULL WHERE user_id = ?',(user_id,) )
+    elif tot[2] == f'{heh}':
+        cursor.execute('UPDATE vyzf SET gorin3 = NULL WHERE user_id = ?',(user_id,) )
+    else:
+        if tot[0] is None:
+            cursor.execute(f'UPDATE vyzf SET gorin1 = "{heh}" WHERE user_id = ?', (user_id,))
+        elif tot[1] is None:
+            cursor.execute(f'UPDATE vyzf SET gorin2 = "{heh}" WHERE user_id = ?', (user_id,))
+        elif tot[2] is None:
+            cursor.execute(f'UPDATE vyzf SET gorin3 = "{heh}" WHERE user_id = ?', (user_id,))
+
+
+    conn.commit()
+    buttons1 = []
+    
+    # Добавляем кнопки для каждой записи в res
+    for gg in res:
+        cursor.execute('SELECT gorin1, gorin2, gorin3 FROM vyzf WHERE user_id = ?',(user_id,))
+        tot = cursor.fetchone()
+        if tot[0] == gg[1] or tot[1] == gg[1] or tot[2] == gg[1]:
+            buttons1.append([InlineKeyboardButton(text=f'{gg[0]}✅', callback_data=f'op{gg[1]}')])
+        else:
+            buttons1.append([InlineKeyboardButton(text=f'{gg[0]}', callback_data=f'op{gg[1]}')])
+    buttons1.append([InlineKeyboardButton(text='Назад📌', callback_data=f'Pop{sik[0]}1')])
+
+    keyboard = InlineKeyboardMarkup(inline_keyboard=buttons1)
+    await callback.answer('')
+    await callback.message.edit_text('Выберите город для поиска',reply_markup=keyboard)
+
+@router.callback_query(F.data == 'opnvs')
+async def tsh(callback: CallbackQuery):
+    user_id = callback.from_user.id
+    heh = 'nvs'
+    cursor.execute('SELECT vyzn FROM users WHERE user_id = ?',(user_id,))
+    sik = cursor.fetchone()
+    
+    cursor.execute(f'SELECT DISTINCT gorod, gorodind FROM vyz WHERE napravlenie = "{sik[0]}"')
+    res = cursor.fetchall()
+    
+
+    cursor.execute('SELECT gorin1, gorin2, gorin3 FROM vyzf WHERE user_id = ?',(user_id,))
+    tot = cursor.fetchone()
+    if tot[0] == f'{heh}':
+        cursor.execute('UPDATE vyzf SET gorin1 = NULL WHERE user_id = ?',(user_id,) )
+    elif tot[1] == f'{heh}':
+        cursor.execute('UPDATE vyzf SET gorin2 = NULL WHERE user_id = ?',(user_id,) )
+    elif tot[2] == f'{heh}':
+        cursor.execute('UPDATE vyzf SET gorin3 = NULL WHERE user_id = ?',(user_id,) )
+    else:
+        if tot[0] is None:
+            cursor.execute(f'UPDATE vyzf SET gorin1 = "{heh}" WHERE user_id = ?', (user_id,))
+        elif tot[1] is None:
+            cursor.execute(f'UPDATE vyzf SET gorin2 = "{heh}" WHERE user_id = ?', (user_id,))
+        elif tot[2] is None:
+            cursor.execute(f'UPDATE vyzf SET gorin3 = "{heh}" WHERE user_id = ?', (user_id,))
+
+
+    conn.commit()
+    buttons1 = []
+    
+    # Добавляем кнопки для каждой записи в res
+    for gg in res:
+        cursor.execute('SELECT gorin1, gorin2, gorin3 FROM vyzf WHERE user_id = ?',(user_id,))
+        tot = cursor.fetchone()
+        if tot[0] == gg[1] or tot[1] == gg[1] or tot[2] == gg[1]:
+            buttons1.append([InlineKeyboardButton(text=f'{gg[0]}✅', callback_data=f'op{gg[1]}')])
+        else:
+            buttons1.append([InlineKeyboardButton(text=f'{gg[0]}', callback_data=f'op{gg[1]}')])
+    buttons1.append([InlineKeyboardButton(text='Назад📌', callback_data=f'Pop{sik[0]}1')])
+
+    keyboard = InlineKeyboardMarkup(inline_keyboard=buttons1)
+    await callback.answer('')
+    await callback.message.edit_text('Выберите город для поиска',reply_markup=keyboard)
+
+@router.callback_query(F.data == 'opnnv')
+async def tsh(callback: CallbackQuery):
+    user_id = callback.from_user.id
+    heh = 'nnv'
+    cursor.execute('SELECT vyzn FROM users WHERE user_id = ?',(user_id,))
+    sik = cursor.fetchone()
+    
+    cursor.execute(f'SELECT DISTINCT gorod, gorodind FROM vyz WHERE napravlenie = "{sik[0]}"')
+    res = cursor.fetchall()
+    
+
+    cursor.execute('SELECT gorin1, gorin2, gorin3 FROM vyzf WHERE user_id = ?',(user_id,))
+    tot = cursor.fetchone()
+    if tot[0] == f'{heh}':
+        cursor.execute('UPDATE vyzf SET gorin1 = NULL WHERE user_id = ?',(user_id,) )
+    elif tot[1] == f'{heh}':
+        cursor.execute('UPDATE vyzf SET gorin2 = NULL WHERE user_id = ?',(user_id,) )
+    elif tot[2] == f'{heh}':
+        cursor.execute('UPDATE vyzf SET gorin3 = NULL WHERE user_id = ?',(user_id,) )
+    else:
+        if tot[0] is None:
+            cursor.execute(f'UPDATE vyzf SET gorin1 = "{heh}" WHERE user_id = ?', (user_id,))
+        elif tot[1] is None:
+            cursor.execute(f'UPDATE vyzf SET gorin2 = "{heh}" WHERE user_id = ?', (user_id,))
+        elif tot[2] is None:
+            cursor.execute(f'UPDATE vyzf SET gorin3 = "{heh}" WHERE user_id = ?', (user_id,))
+
+
+    conn.commit()
+    buttons1 = []
+    
+    # Добавляем кнопки для каждой записи в res
+    for gg in res:
+        cursor.execute('SELECT gorin1, gorin2, gorin3 FROM vyzf WHERE user_id = ?',(user_id,))
+        tot = cursor.fetchone()
+        if tot[0] == gg[1] or tot[1] == gg[1] or tot[2] == gg[1]:
+            buttons1.append([InlineKeyboardButton(text=f'{gg[0]}✅', callback_data=f'op{gg[1]}')])
+        else:
+            buttons1.append([InlineKeyboardButton(text=f'{gg[0]}', callback_data=f'op{gg[1]}')])
+    buttons1.append([InlineKeyboardButton(text='Назад📌', callback_data=f'Pop{sik[0]}1')])
+
+    keyboard = InlineKeyboardMarkup(inline_keyboard=buttons1)
+    await callback.answer('')
+    await callback.message.edit_text('Выберите город для поиска',reply_markup=keyboard)
+
+@router.callback_query(F.data == 'opekb')
+async def tsh(callback: CallbackQuery):
+    user_id = callback.from_user.id
+    heh = 'ekb'
+    cursor.execute('SELECT vyzn FROM users WHERE user_id = ?',(user_id,))
+    sik = cursor.fetchone()
+    
+    cursor.execute(f'SELECT DISTINCT gorod, gorodind FROM vyz WHERE napravlenie = "{sik[0]}"')
+    res = cursor.fetchall()
+    
+
+    cursor.execute('SELECT gorin1, gorin2, gorin3 FROM vyzf WHERE user_id = ?',(user_id,))
+    tot = cursor.fetchone()
+    if tot[0] == f'{heh}':
+        cursor.execute('UPDATE vyzf SET gorin1 = NULL WHERE user_id = ?',(user_id,) )
+    elif tot[1] == f'{heh}':
+        cursor.execute('UPDATE vyzf SET gorin2 = NULL WHERE user_id = ?',(user_id,) )
+    elif tot[2] == f'{heh}':
+        cursor.execute('UPDATE vyzf SET gorin3 = NULL WHERE user_id = ?',(user_id,) )
+    else:
+        if tot[0] is None:
+            cursor.execute(f'UPDATE vyzf SET gorin1 = "{heh}" WHERE user_id = ?', (user_id,))
+        elif tot[1] is None:
+            cursor.execute(f'UPDATE vyzf SET gorin2 = "{heh}" WHERE user_id = ?', (user_id,))
+        elif tot[2] is None:
+            cursor.execute(f'UPDATE vyzf SET gorin3 = "{heh}" WHERE user_id = ?', (user_id,))
+
+
+    conn.commit()
+    buttons1 = []
+    
+    # Добавляем кнопки для каждой записи в res
+    for gg in res:
+        cursor.execute('SELECT gorin1, gorin2, gorin3 FROM vyzf WHERE user_id = ?',(user_id,))
+        tot = cursor.fetchone()
+        if tot[0] == gg[1] or tot[1] == gg[1] or tot[2] == gg[1]:
+            buttons1.append([InlineKeyboardButton(text=f'{gg[0]}✅', callback_data=f'op{gg[1]}')])
+        else:
+            buttons1.append([InlineKeyboardButton(text=f'{gg[0]}', callback_data=f'op{gg[1]}')])
+    buttons1.append([InlineKeyboardButton(text='Назад📌', callback_data=f'Pop{sik[0]}1')])
+
+    keyboard = InlineKeyboardMarkup(inline_keyboard=buttons1)
+    await callback.answer('')
+    await callback.message.edit_text('Выберите город для поиска',reply_markup=keyboard)
+
+
+@router.callback_query(F.data == 'opbar')
+async def tsh(callback: CallbackQuery):
+    user_id = callback.from_user.id
+    heh = 'bar'
+    cursor.execute('SELECT vyzn FROM users WHERE user_id = ?',(user_id,))
+    sik = cursor.fetchone()
+    
+    cursor.execute(f'SELECT DISTINCT gorod, gorodind FROM vyz WHERE napravlenie = "{sik[0]}"')
+    res = cursor.fetchall()
+    
+
+    cursor.execute('SELECT gorin1, gorin2, gorin3 FROM vyzf WHERE user_id = ?',(user_id,))
+    tot = cursor.fetchone()
+    if tot[0] == f'{heh}':
+        cursor.execute('UPDATE vyzf SET gorin1 = NULL WHERE user_id = ?',(user_id,) )
+    elif tot[1] == f'{heh}':
+        cursor.execute('UPDATE vyzf SET gorin2 = NULL WHERE user_id = ?',(user_id,) )
+    elif tot[2] == f'{heh}':
+        cursor.execute('UPDATE vyzf SET gorin3 = NULL WHERE user_id = ?',(user_id,) )
+    else:
+        if tot[0] is None:
+            cursor.execute(f'UPDATE vyzf SET gorin1 = "{heh}" WHERE user_id = ?', (user_id,))
+        elif tot[1] is None:
+            cursor.execute(f'UPDATE vyzf SET gorin2 = "{heh}" WHERE user_id = ?', (user_id,))
+        elif tot[2] is None:
+            cursor.execute(f'UPDATE vyzf SET gorin3 = "{heh}" WHERE user_id = ?', (user_id,))
+
+
+    conn.commit()
+    buttons1 = []
+    
+    # Добавляем кнопки для каждой записи в res
+    for gg in res:
+        cursor.execute('SELECT gorin1, gorin2, gorin3 FROM vyzf WHERE user_id = ?',(user_id,))
+        tot = cursor.fetchone()
+        if tot[0] == gg[1] or tot[1] == gg[1] or tot[2] == gg[1]:
+            buttons1.append([InlineKeyboardButton(text=f'{gg[0]}✅', callback_data=f'op{gg[1]}')])
+        else:
+            buttons1.append([InlineKeyboardButton(text=f'{gg[0]}', callback_data=f'op{gg[1]}')])
+    buttons1.append([InlineKeyboardButton(text='Назад📌', callback_data=f'Pop{sik[0]}1')])
+
+    keyboard = InlineKeyboardMarkup(inline_keyboard=buttons1)
+    await callback.answer('')
+    await callback.message.edit_text('Выберите город для поиска',reply_markup=keyboard)
+
+
+
+
+@router.callback_query(F.data == 'opros')
+async def tsh(callback: CallbackQuery):
+    user_id = callback.from_user.id
+    heh = 'ros'
+    cursor.execute('SELECT vyzn FROM users WHERE user_id = ?',(user_id,))
+    sik = cursor.fetchone()
+    
+    cursor.execute(f'SELECT DISTINCT gorod, gorodind FROM vyz WHERE napravlenie = "{sik[0]}"')
+    res = cursor.fetchall()
+    
+
+    cursor.execute('SELECT gorin1, gorin2, gorin3 FROM vyzf WHERE user_id = ?',(user_id,))
+    tot = cursor.fetchone()
+    if tot[0] == f'{heh}':
+        cursor.execute('UPDATE vyzf SET gorin1 = NULL WHERE user_id = ?',(user_id,) )
+    elif tot[1] == f'{heh}':
+        cursor.execute('UPDATE vyzf SET gorin2 = NULL WHERE user_id = ?',(user_id,) )
+    elif tot[2] == f'{heh}':
+        cursor.execute('UPDATE vyzf SET gorin3 = NULL WHERE user_id = ?',(user_id,) )
+    else:
+        if tot[0] is None:
+            cursor.execute(f'UPDATE vyzf SET gorin1 = "{heh}" WHERE user_id = ?', (user_id,))
+        elif tot[1] is None:
+            cursor.execute(f'UPDATE vyzf SET gorin2 = "{heh}" WHERE user_id = ?', (user_id,))
+        elif tot[2] is None:
+            cursor.execute(f'UPDATE vyzf SET gorin3 = "{heh}" WHERE user_id = ?', (user_id,))
+
+
+    conn.commit()
+    buttons1 = []
+    
+    # Добавляем кнопки для каждой записи в res
+    for gg in res:
+        cursor.execute('SELECT gorin1, gorin2, gorin3 FROM vyzf WHERE user_id = ?',(user_id,))
+        tot = cursor.fetchone()
+        if tot[0] == gg[1] or tot[1] == gg[1] or tot[2] == gg[1]:
+            buttons1.append([InlineKeyboardButton(text=f'{gg[0]}✅', callback_data=f'op{gg[1]}')])
+        else:
+            buttons1.append([InlineKeyboardButton(text=f'{gg[0]}', callback_data=f'op{gg[1]}')])
+    buttons1.append([InlineKeyboardButton(text='Назад📌', callback_data=f'Pop{sik[0]}1')])
+
+    keyboard = InlineKeyboardMarkup(inline_keyboard=buttons1)
+    await callback.answer('')
+    await callback.message.edit_text('Выберите город для поиска',reply_markup=keyboard)
+
+@router.callback_query(F.data == 'optom')
+async def tsh(callback: CallbackQuery):
+    user_id = callback.from_user.id
+    heh = 'tom'
+    cursor.execute('SELECT vyzn FROM users WHERE user_id = ?',(user_id,))
+    sik = cursor.fetchone()
+    
+    cursor.execute(f'SELECT DISTINCT gorod, gorodind FROM vyz WHERE napravlenie = "{sik[0]}"')
+    res = cursor.fetchall()
+    
+
+    cursor.execute('SELECT gorin1, gorin2, gorin3 FROM vyzf WHERE user_id = ?',(user_id,))
+    tot = cursor.fetchone()
+    if tot[0] == f'{heh}':
+        cursor.execute('UPDATE vyzf SET gorin1 = NULL WHERE user_id = ?',(user_id,) )
+    elif tot[1] == f'{heh}':
+        cursor.execute('UPDATE vyzf SET gorin2 = NULL WHERE user_id = ?',(user_id,) )
+    elif tot[2] == f'{heh}':
+        cursor.execute('UPDATE vyzf SET gorin3 = NULL WHERE user_id = ?',(user_id,) )
+    else:
+        if tot[0] is None:
+            cursor.execute(f'UPDATE vyzf SET gorin1 = "{heh}" WHERE user_id = ?', (user_id,))
+        elif tot[1] is None:
+            cursor.execute(f'UPDATE vyzf SET gorin2 = "{heh}" WHERE user_id = ?', (user_id,))
+        elif tot[2] is None:
+            cursor.execute(f'UPDATE vyzf SET gorin3 = "{heh}" WHERE user_id = ?', (user_id,))
+
+
+    conn.commit()
+    buttons1 = []
+    
+    # Добавляем кнопки для каждой записи в res
+    for gg in res:
+        cursor.execute('SELECT gorin1, gorin2, gorin3 FROM vyzf WHERE user_id = ?',(user_id,))
+        tot = cursor.fetchone()
+        if tot[0] == gg[1] or tot[1] == gg[1] or tot[2] == gg[1]:
+            buttons1.append([InlineKeyboardButton(text=f'{gg[0]}✅', callback_data=f'op{gg[1]}')])
+        else:
+            buttons1.append([InlineKeyboardButton(text=f'{gg[0]}', callback_data=f'op{gg[1]}')])
+    buttons1.append([InlineKeyboardButton(text='Назад📌', callback_data=f'Pop{sik[0]}1')])
+
+    keyboard = InlineKeyboardMarkup(inline_keyboard=buttons1)
+    await callback.answer('')
+    await callback.message.edit_text('Выберите город для поиска',reply_markup=keyboard)
+
+
+
+
+@router.callback_query(F.data == 'opyfa')
+async def tsh(callback: CallbackQuery):
+    user_id = callback.from_user.id
+    heh = 'yfa'
+    cursor.execute('SELECT vyzn FROM users WHERE user_id = ?',(user_id,))
+    sik = cursor.fetchone()
+    
+    cursor.execute(f'SELECT DISTINCT gorod, gorodind FROM vyz WHERE napravlenie = "{sik[0]}"')
+    res = cursor.fetchall()
+    
+
+    cursor.execute('SELECT gorin1, gorin2, gorin3 FROM vyzf WHERE user_id = ?',(user_id,))
+    tot = cursor.fetchone()
+    if tot[0] == f'{heh}':
+        cursor.execute('UPDATE vyzf SET gorin1 = NULL WHERE user_id = ?',(user_id,) )
+    elif tot[1] == f'{heh}':
+        cursor.execute('UPDATE vyzf SET gorin2 = NULL WHERE user_id = ?',(user_id,) )
+    elif tot[2] == f'{heh}':
+        cursor.execute('UPDATE vyzf SET gorin3 = NULL WHERE user_id = ?',(user_id,) )
+    else:
+        if tot[0] is None:
+            cursor.execute(f'UPDATE vyzf SET gorin1 = "{heh}" WHERE user_id = ?', (user_id,))
+        elif tot[1] is None:
+            cursor.execute(f'UPDATE vyzf SET gorin2 = "{heh}" WHERE user_id = ?', (user_id,))
+        elif tot[2] is None:
+            cursor.execute(f'UPDATE vyzf SET gorin3 = "{heh}" WHERE user_id = ?', (user_id,))
+
+
+    conn.commit()
+    buttons1 = []
+    
+    # Добавляем кнопки для каждой записи в res
+    for gg in res:
+        cursor.execute('SELECT gorin1, gorin2, gorin3 FROM vyzf WHERE user_id = ?',(user_id,))
+        tot = cursor.fetchone()
+        if tot[0] == gg[1] or tot[1] == gg[1] or tot[2] == gg[1]:
+            buttons1.append([InlineKeyboardButton(text=f'{gg[0]}✅', callback_data=f'op{gg[1]}')])
+        else:
+            buttons1.append([InlineKeyboardButton(text=f'{gg[0]}', callback_data=f'op{gg[1]}')])
+    buttons1.append([InlineKeyboardButton(text='Назад📌', callback_data=f'Pop{sik[0]}1')])
+
+    keyboard = InlineKeyboardMarkup(inline_keyboard=buttons1)
+    await callback.answer('')
+    await callback.message.edit_text('Выберите город для поиска',reply_markup=keyboard)
+
+
+@router.callback_query(F.data == 'opkyr')
+async def tsh(callback: CallbackQuery):
+    user_id = callback.from_user.id
+    heh = 'kyr'
+    cursor.execute('SELECT vyzn FROM users WHERE user_id = ?',(user_id,))
+    sik = cursor.fetchone()
+    
+    cursor.execute(f'SELECT DISTINCT gorod, gorodind FROM vyz WHERE napravlenie = "{sik[0]}"')
+    res = cursor.fetchall()
+    
+
+    cursor.execute('SELECT gorin1, gorin2, gorin3 FROM vyzf WHERE user_id = ?',(user_id,))
+    tot = cursor.fetchone()
+    if tot[0] == f'{heh}':
+        cursor.execute('UPDATE vyzf SET gorin1 = NULL WHERE user_id = ?',(user_id,) )
+    elif tot[1] == f'{heh}':
+        cursor.execute('UPDATE vyzf SET gorin2 = NULL WHERE user_id = ?',(user_id,) )
+    elif tot[2] == f'{heh}':
+        cursor.execute('UPDATE vyzf SET gorin3 = NULL WHERE user_id = ?',(user_id,) )
+    else:
+        if tot[0] is None:
+            cursor.execute(f'UPDATE vyzf SET gorin1 = "{heh}" WHERE user_id = ?', (user_id,))
+        elif tot[1] is None:
+            cursor.execute(f'UPDATE vyzf SET gorin2 = "{heh}" WHERE user_id = ?', (user_id,))
+        elif tot[2] is None:
+            cursor.execute(f'UPDATE vyzf SET gorin3 = "{heh}" WHERE user_id = ?', (user_id,))
+
+
+    conn.commit()
+    buttons1 = []
+    
+    # Добавляем кнопки для каждой записи в res
+    for gg in res:
+        cursor.execute('SELECT gorin1, gorin2, gorin3 FROM vyzf WHERE user_id = ?',(user_id,))
+        tot = cursor.fetchone()
+        if tot[0] == gg[1] or tot[1] == gg[1] or tot[2] == gg[1]:
+            buttons1.append([InlineKeyboardButton(text=f'{gg[0]}✅', callback_data=f'op{gg[1]}')])
+        else:
+            buttons1.append([InlineKeyboardButton(text=f'{gg[0]}', callback_data=f'op{gg[1]}')])
+    buttons1.append([InlineKeyboardButton(text='Назад📌', callback_data=f'Pop{sik[0]}1')])
+
+    keyboard = InlineKeyboardMarkup(inline_keyboard=buttons1)
+    await callback.answer('')
+    await callback.message.edit_text('Выберите город для поиска',reply_markup=keyboard)
+
+@router.callback_query(F.data == 'opvol')
+async def tsh(callback: CallbackQuery):
+    user_id = callback.from_user.id
+    heh = 'vol'
+    cursor.execute('SELECT vyzn FROM users WHERE user_id = ?',(user_id,))
+    sik = cursor.fetchone()
+    
+    cursor.execute(f'SELECT DISTINCT gorod, gorodind FROM vyz WHERE napravlenie = "{sik[0]}"')
+    res = cursor.fetchall()
+    
+
+    cursor.execute('SELECT gorin1, gorin2, gorin3 FROM vyzf WHERE user_id = ?',(user_id,))
+    tot = cursor.fetchone()
+    if tot[0] == f'{heh}':
+        cursor.execute('UPDATE vyzf SET gorin1 = NULL WHERE user_id = ?',(user_id,) )
+    elif tot[1] == f'{heh}':
+        cursor.execute('UPDATE vyzf SET gorin2 = NULL WHERE user_id = ?',(user_id,) )
+    elif tot[2] == f'{heh}':
+        cursor.execute('UPDATE vyzf SET gorin3 = NULL WHERE user_id = ?',(user_id,) )
+    else:
+        if tot[0] is None:
+            cursor.execute(f'UPDATE vyzf SET gorin1 = "{heh}" WHERE user_id = ?', (user_id,))
+        elif tot[1] is None:
+            cursor.execute(f'UPDATE vyzf SET gorin2 = "{heh}" WHERE user_id = ?', (user_id,))
+        elif tot[2] is None:
+            cursor.execute(f'UPDATE vyzf SET gorin3 = "{heh}" WHERE user_id = ?', (user_id,))
+
+
+    conn.commit()
+    buttons1 = []
+    
+    # Добавляем кнопки для каждой записи в res
+    for gg in res:
+        cursor.execute('SELECT gorin1, gorin2, gorin3 FROM vyzf WHERE user_id = ?',(user_id,))
+        tot = cursor.fetchone()
+        if tot[0] == gg[1] or tot[1] == gg[1] or tot[2] == gg[1]:
+            buttons1.append([InlineKeyboardButton(text=f'{gg[0]}✅', callback_data=f'op{gg[1]}')])
+        else:
+            buttons1.append([InlineKeyboardButton(text=f'{gg[0]}', callback_data=f'op{gg[1]}')])
+    buttons1.append([InlineKeyboardButton(text='Назад📌', callback_data=f'Pop{sik[0]}1')])
+
+    keyboard = InlineKeyboardMarkup(inline_keyboard=buttons1)
+    await callback.answer('')
+    await callback.message.edit_text('Выберите город для поиска',reply_markup=keyboard)
+
+
+@router.callback_query(F.data == 'opsev')
+async def tsh(callback: CallbackQuery):
+    user_id = callback.from_user.id
+    heh = 'sev'
+    cursor.execute('SELECT vyzn FROM users WHERE user_id = ?',(user_id,))
+    sik = cursor.fetchone()
+    
+    cursor.execute(f'SELECT DISTINCT gorod, gorodind FROM vyz WHERE napravlenie = "{sik[0]}"')
+    res = cursor.fetchall()
+    
+
+    cursor.execute('SELECT gorin1, gorin2, gorin3 FROM vyzf WHERE user_id = ?',(user_id,))
+    tot = cursor.fetchone()
+    if tot[0] == f'{heh}':
+        cursor.execute('UPDATE vyzf SET gorin1 = NULL WHERE user_id = ?',(user_id,) )
+    elif tot[1] == f'{heh}':
+        cursor.execute('UPDATE vyzf SET gorin2 = NULL WHERE user_id = ?',(user_id,) )
+    elif tot[2] == f'{heh}':
+        cursor.execute('UPDATE vyzf SET gorin3 = NULL WHERE user_id = ?',(user_id,) )
+    else:
+        if tot[0] is None:
+            cursor.execute(f'UPDATE vyzf SET gorin1 = "{heh}" WHERE user_id = ?', (user_id,))
+        elif tot[1] is None:
+            cursor.execute(f'UPDATE vyzf SET gorin2 = "{heh}" WHERE user_id = ?', (user_id,))
+        elif tot[2] is None:
+            cursor.execute(f'UPDATE vyzf SET gorin3 = "{heh}" WHERE user_id = ?', (user_id,))
+
+
+    conn.commit()
+    buttons1 = []
+    
+    # Добавляем кнопки для каждой записи в res
+    for gg in res:
+        cursor.execute('SELECT gorin1, gorin2, gorin3 FROM vyzf WHERE user_id = ?',(user_id,))
+        tot = cursor.fetchone()
+        if tot[0] == gg[1] or tot[1] == gg[1] or tot[2] == gg[1]:
+            buttons1.append([InlineKeyboardButton(text=f'{gg[0]}✅', callback_data=f'op{gg[1]}')])
+        else:
+            buttons1.append([InlineKeyboardButton(text=f'{gg[0]}', callback_data=f'op{gg[1]}')])
+    buttons1.append([InlineKeyboardButton(text='Назад📌', callback_data=f'Pop{sik[0]}1')])
+
+    keyboard = InlineKeyboardMarkup(inline_keyboard=buttons1)
+    await callback.answer('')
+    await callback.message.edit_text('Выберите город для поиска',reply_markup=keyboard)
+
+
 
 # endregion
 
@@ -554,8 +1337,12 @@ async def tsh(callback: CallbackQuery):
     pir = cursor.fetchall()
     YrFedYnElc = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Сайт учебного заведения🌐', url=f'{pir[0][1]}')],
+    [InlineKeyboardButton(text='Что такое "Проходной бал"?', callback_data='prohodnoy')],
     [InlineKeyboardButton(text='Назад📌', callback_data='Poppsihol1')]
 ])
+    user_id = callback.from_user.id
+    cursor.execute('INSERT OR REPLACE INTO lastcon(user_id, lastdata) VALUES (?, ?)',(user_id,'mgypsih'))
+    conn.commit()
     await callback.answer('')
     await callback.message.edit_text(f'{pir[0][4]}\nГород - {pir[0][0]}\nПроходной бал бюджет - {pir[0][2]}\nПроходной бал платное - {pir[0][3]}',reply_markup=YrFedYnElc)
 
@@ -565,8 +1352,12 @@ async def tsh(callback: CallbackQuery):
     pir = cursor.fetchall()
     YrFedYnElc = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Сайт учебного заведения🌐', url=f'{pir[0][1]}')],
+    [InlineKeyboardButton(text='Что такое "Проходной бал"?', callback_data='prohodnoy')],
     [InlineKeyboardButton(text='Назад📌', callback_data='Poppsihol1')]
 ])
+    user_id = callback.from_user.id
+    cursor.execute('INSERT OR REPLACE INTO lastcon(user_id, lastdata) VALUES (?, ?)',(user_id,'vhepsih'))
+    conn.commit()
     await callback.answer('')
     await callback.message.edit_text(f'{pir[0][4]}\nГород - {pir[0][0]}\nПроходной бал бюджет - {pir[0][2]}\nПроходной бал платное - {pir[0][3]}',reply_markup=YrFedYnElc)
 
@@ -576,8 +1367,12 @@ async def tsh(callback: CallbackQuery):
     pir = cursor.fetchall()
     YrFedYnElc = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Сайт учебного заведения🌐', url=f'{pir[0][1]}')],
+    [InlineKeyboardButton(text='Что такое "Проходной бал"?', callback_data='prohodnoy')],
     [InlineKeyboardButton(text='Назад📌', callback_data='Poppsihol1')]
 ])
+    user_id = callback.from_user.id
+    cursor.execute('INSERT OR REPLACE INTO lastcon(user_id, lastdata) VALUES (?, ?)',(user_id,'sevpsih'))
+    conn.commit()
     await callback.answer('')
     await callback.message.edit_text(f'{pir[0][4]}\nГород - {pir[0][0]}\nПроходной бал бюджет - {pir[0][2]}\nПроходной бал платное - {pir[0][3]}',reply_markup=YrFedYnElc)
 
@@ -587,8 +1382,12 @@ async def tsh(callback: CallbackQuery):
     pir = cursor.fetchall()
     YrFedYnElc = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Сайт учебного заведения🌐', url=f'{pir[0][1]}')],
+    [InlineKeyboardButton(text='Что такое "Проходной бал"?', callback_data='prohodnoy')],
     [InlineKeyboardButton(text='Назад📌', callback_data='Poppsihol1')]
 ])
+    user_id = callback.from_user.id
+    cursor.execute('INSERT OR REPLACE INTO lastcon(user_id, lastdata) VALUES (?, ?)',(user_id,'vladpsih'))
+    conn.commit()
     await callback.answer('')
     await callback.message.edit_text(f'{pir[0][4]}\nГород - {pir[0][0]}\nПроходной бал бюджет - {pir[0][2]}\nПроходной бал платное - {pir[0][3]}',reply_markup=YrFedYnElc)
 
@@ -598,8 +1397,12 @@ async def tsh(callback: CallbackQuery):
     pir = cursor.fetchall()
     YrFedYnElc = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Сайт учебного заведения🌐', url=f'{pir[0][1]}')],
+    [InlineKeyboardButton(text='Что такое "Проходной бал"?', callback_data='prohodnoy')],
     [InlineKeyboardButton(text='Назад📌', callback_data='Poppsihol1')]
 ])
+    user_id = callback.from_user.id
+    cursor.execute('INSERT OR REPLACE INTO lastcon(user_id, lastdata) VALUES (?, ?)',(user_id,'mospsih'))
+    conn.commit()
     await callback.answer('')
     await callback.message.edit_text(f'{pir[0][4]}\nГород - {pir[0][0]}\nПроходной бал бюджет - {pir[0][2]}\nПроходной бал платное - {pir[0][3]}',reply_markup=YrFedYnElc)
 
@@ -612,8 +1415,12 @@ async def tsh(callback: CallbackQuery):
     pir = cursor.fetchall()
     YrFedYnElc = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Сайт учебного заведения🌐', url=f'{pir[0][1]}')],
+    [InlineKeyboardButton(text='Что такое "Проходной бал"?', callback_data='prohodnoy')],
     [InlineKeyboardButton(text='Назад📌', callback_data='Popprep1')]
 ])
+    user_id = callback.from_user.id
+    cursor.execute('INSERT OR REPLACE INTO lastcon(user_id, lastdata) VALUES (?, ?)',(user_id,'Mosprep'))
+    conn.commit()
     await callback.answer('')
     await callback.message.edit_text(f'{pir[0][4]}\nГород - {pir[0][0]}\nПроходной бал бюджет - {pir[0][2]}\nПроходной бал платное - {pir[0][3]}',reply_markup=YrFedYnElc)
 
@@ -623,8 +1430,12 @@ async def tsh(callback: CallbackQuery):
     pir = cursor.fetchall()
     YrFedYnElc = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Сайт учебного заведения🌐', url=f'{pir[0][1]}')],
+    [InlineKeyboardButton(text='Что такое "Проходной бал"?', callback_data='prohodnoy')],
     [InlineKeyboardButton(text='Назад📌', callback_data='Popprep1')]
 ])
+    user_id = callback.from_user.id
+    cursor.execute('INSERT OR REPLACE INTO lastcon(user_id, lastdata) VALUES (?, ?)',(user_id,'rosprep'))
+    conn.commit()
     await callback.answer('')
     await callback.message.edit_text(f'{pir[0][4]}\nГород - {pir[0][0]}\nПроходной бал бюджет - {pir[0][2]}\nПроходной бал платное - {pir[0][3]}',reply_markup=YrFedYnElc)
 
@@ -634,8 +1445,12 @@ async def tsh(callback: CallbackQuery):
     pir = cursor.fetchall()
     YrFedYnElc = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Сайт учебного заведения🌐', url=f'{pir[0][1]}')],
+    [InlineKeyboardButton(text='Что такое "Проходной бал"?', callback_data='prohodnoy')],
     [InlineKeyboardButton(text='Назад📌', callback_data='Popprep1')]
 ])
+    user_id = callback.from_user.id
+    cursor.execute('INSERT OR REPLACE INTO lastcon(user_id, lastdata) VALUES (?, ?)',(user_id,'belprep'))
+    conn.commit()
     await callback.answer('')
     await callback.message.edit_text(f'{pir[0][4]}\nГород - {pir[0][0]}\nПроходной бал бюджет - {pir[0][2]}\nПроходной бал платное - {pir[0][3]}',reply_markup=YrFedYnElc)
 
@@ -645,8 +1460,12 @@ async def tsh(callback: CallbackQuery):
     pir = cursor.fetchall()
     YrFedYnElc = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Сайт учебного заведения🌐', url=f'{pir[0][1]}')],
+    [InlineKeyboardButton(text='Что такое "Проходной бал"?', callback_data='prohodnoy')],
     [InlineKeyboardButton(text='Назад📌', callback_data='Popprep1')]
 ])
+    user_id = callback.from_user.id
+    cursor.execute('INSERT OR REPLACE INTO lastcon(user_id, lastdata) VALUES (?, ?)',(user_id,'sibprep'))
+    conn.commit()
     await callback.answer('')
     await callback.message.edit_text(f'{pir[0][4]}\nГород - {pir[0][0]}\nПроходной бал бюджет - {pir[0][2]}\nПроходной бал платное - {pir[0][3]}',reply_markup=YrFedYnElc)
 
@@ -656,8 +1475,12 @@ async def tsh(callback: CallbackQuery):
     pir = cursor.fetchall()
     YrFedYnElc = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Сайт учебного заведения🌐', url=f'{pir[0][1]}')],
+    [InlineKeyboardButton(text='Что такое "Проходной бал"?', callback_data='prohodnoy')],
     [InlineKeyboardButton(text='Назад📌', callback_data='Popprep1')]
 ])
+    user_id = callback.from_user.id
+    cursor.execute('INSERT OR REPLACE INTO lastcon(user_id, lastdata) VALUES (?, ?)',(user_id,'sevkavprep'))
+    conn.commit()
     await callback.answer('')
     await callback.message.edit_text(f'{pir[0][4]}\nГород - {pir[0][0]}\nПроходной бал бюджет - {pir[0][2]}\nПроходной бал платное - {pir[0][3]}',reply_markup=YrFedYnElc)
 
@@ -670,8 +1493,12 @@ async def tsh(callback: CallbackQuery):
     pir = cursor.fetchall()
     YrFedYnElc = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Сайт учебного заведения🌐', url=f'{pir[0][1]}')],
+    [InlineKeyboardButton(text='Что такое "Проходной бал"?', callback_data='prohodnoy')],
     [InlineKeyboardButton(text='Назад📌', callback_data='Popzhur1')]
 ])
+    user_id = callback.from_user.id
+    cursor.execute('INSERT OR REPLACE INTO lastcon(user_id, lastdata) VALUES (?, ?)',(user_id,'zhu1'))
+    conn.commit()
     await callback.answer('')
     await callback.message.edit_text(f'{pir[0][4]}\nГород - {pir[0][0]}\nПроходной бал бюджет - {pir[0][2]}\nПроходной бал платное - {pir[0][3]}',reply_markup=YrFedYnElc)
 
@@ -681,8 +1508,12 @@ async def tsh(callback: CallbackQuery):
     pir = cursor.fetchall()
     YrFedYnElc = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Сайт учебного заведения🌐', url=f'{pir[0][1]}')],
+    [InlineKeyboardButton(text='Что такое "Проходной бал"?', callback_data='prohodnoy')],
     [InlineKeyboardButton(text='Назад📌', callback_data='Popzhur1')]
 ])
+    user_id = callback.from_user.id
+    cursor.execute('INSERT OR REPLACE INTO lastcon(user_id, lastdata) VALUES (?, ?)',(user_id,'zhu2'))
+    conn.commit()
     await callback.answer('')
     await callback.message.edit_text(f'{pir[0][4]}\nГород - {pir[0][0]}\nПроходной бал бюджет - {pir[0][2]}\nПроходной бал платное - {pir[0][3]}',reply_markup=YrFedYnElc)
 
@@ -692,8 +1523,12 @@ async def tsh(callback: CallbackQuery):
     pir = cursor.fetchall()
     YrFedYnElc = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Сайт учебного заведения🌐', url=f'{pir[0][1]}')],
+    [InlineKeyboardButton(text='Что такое "Проходной бал"?', callback_data='prohodnoy')],
     [InlineKeyboardButton(text='Назад📌', callback_data='Popzhur1')]
 ])
+    user_id = callback.from_user.id
+    cursor.execute('INSERT OR REPLACE INTO lastcon(user_id, lastdata) VALUES (?, ?)',(user_id,'zhu3'))
+    conn.commit()
     await callback.answer('')
     await callback.message.edit_text(f'{pir[0][4]}\nГород - {pir[0][0]}\nПроходной бал бюджет - {pir[0][2]}\nПроходной бал платное - {pir[0][3]}',reply_markup=YrFedYnElc)
 
@@ -703,8 +1538,12 @@ async def tsh(callback: CallbackQuery):
     pir = cursor.fetchall()
     YrFedYnElc = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Сайт учебного заведения🌐', url=f'{pir[0][1]}')],
+    [InlineKeyboardButton(text='Что такое "Проходной бал"?', callback_data='prohodnoy')],
     [InlineKeyboardButton(text='Назад📌', callback_data='Popzhur1')]
 ])
+    user_id = callback.from_user.id
+    cursor.execute('INSERT OR REPLACE INTO lastcon(user_id, lastdata) VALUES (?, ?)',(user_id,'zhu4'))
+    conn.commit()
     await callback.answer('')
     await callback.message.edit_text(f'{pir[0][4]}\nГород - {pir[0][0]}\nПроходной бал бюджет - {pir[0][2]}\nПроходной бал платное - {pir[0][3]}',reply_markup=YrFedYnElc)
 
@@ -714,8 +1553,12 @@ async def tsh(callback: CallbackQuery):
     pir = cursor.fetchall()
     YrFedYnElc = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Сайт учебного заведения🌐', url=f'{pir[0][1]}')],
+    [InlineKeyboardButton(text='Что такое "Проходной бал"?', callback_data='prohodnoy')],
     [InlineKeyboardButton(text='Назад📌', callback_data='Popzhur1')]
 ])
+    user_id = callback.from_user.id
+    cursor.execute('INSERT OR REPLACE INTO lastcon(user_id, lastdata) VALUES (?, ?)',(user_id,'zhu5'))
+    conn.commit()
     await callback.answer('')
     await callback.message.edit_text(f'{pir[0][4]}\nГород - {pir[0][0]}\nПроходной бал бюджет - {pir[0][2]}\nПроходной бал платное - {pir[0][3]}',reply_markup=YrFedYnElc)
 
@@ -728,8 +1571,12 @@ async def tsh(callback: CallbackQuery):
     pir = cursor.fetchall()
     YrFedYnElc = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Сайт учебного заведения🌐', url=f'{pir[0][1]}')],
+    [InlineKeyboardButton(text='Что такое "Проходной бал"?', callback_data='prohodnoy')],
     [InlineKeyboardButton(text='Назад📌', callback_data='Popadv1')]
 ])
+    user_id = callback.from_user.id
+    cursor.execute('INSERT OR REPLACE INTO lastcon(user_id, lastdata) VALUES (?, ?)',(user_id,'SpbAdv5'))
+    conn.commit()
     await callback.answer('')
     await callback.message.edit_text(f'{pir[0][4]}\nГород - {pir[0][0]}\nПроходной бал бюджет - {pir[0][2]}\nПроходной бал платное - {pir[0][3]}',reply_markup=YrFedYnElc)
 
@@ -739,8 +1586,12 @@ async def tsh(callback: CallbackQuery):
     pir = cursor.fetchall()
     YrFedYnElc = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Сайт учебного заведения🌐', url=f'{pir[0][1]}')],
+    [InlineKeyboardButton(text='Что такое "Проходной бал"?', callback_data='prohodnoy')],
     [InlineKeyboardButton(text='Назад📌', callback_data='Popadv1')]
 ])
+    user_id = callback.from_user.id
+    cursor.execute('INSERT OR REPLACE INTO lastcon(user_id, lastdata) VALUES (?, ?)',(user_id,'SpbAdv4'))
+    conn.commit()
     await callback.answer('')
     await callback.message.edit_text(f'{pir[0][4]}\nГород - {pir[0][0]}\nПроходной бал бюджет - {pir[0][2]}\nПроходной бал платное - {pir[0][3]}',reply_markup=YrFedYnElc)
 
@@ -750,8 +1601,12 @@ async def tsh(callback: CallbackQuery):
     pir = cursor.fetchall()
     YrFedYnElc = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Сайт учебного заведения🌐', url=f'{pir[0][1]}')],
+    [InlineKeyboardButton(text='Что такое "Проходной бал"?', callback_data='prohodnoy')],
     [InlineKeyboardButton(text='Назад📌', callback_data='Popadv1')]
 ])
+    user_id = callback.from_user.id
+    cursor.execute('INSERT OR REPLACE INTO lastcon(user_id, lastdata) VALUES (?, ?)',(user_id,'SpbAdv3'))
+    conn.commit()
     await callback.answer('')
     await callback.message.edit_text(f'{pir[0][4]}\nГород - {pir[0][0]}\nПроходной бал бюджет - {pir[0][2]}\nПроходной бал платное - {pir[0][3]}',reply_markup=YrFedYnElc)
 
@@ -761,8 +1616,12 @@ async def tsh(callback: CallbackQuery):
     pir = cursor.fetchall()
     YrFedYnElc = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Сайт учебного заведения🌐', url=f'{pir[0][1]}')],
+    [InlineKeyboardButton(text='Что такое "Проходной бал"?', callback_data='prohodnoy')],
     [InlineKeyboardButton(text='Назад📌', callback_data='Popadv1')]
 ])
+    user_id = callback.from_user.id
+    cursor.execute('INSERT OR REPLACE INTO lastcon(user_id, lastdata) VALUES (?, ?)',(user_id,'SpbAdv2'))
+    conn.commit()
     await callback.answer('')
     await callback.message.edit_text(f'{pir[0][4]}\nГород - {pir[0][0]}\nПроходной бал бюджет - {pir[0][2]}\nПроходной бал платное - {pir[0][3]}',reply_markup=YrFedYnElc)
 
@@ -772,8 +1631,12 @@ async def tsh(callback: CallbackQuery):
     pir = cursor.fetchall()
     YrFedYnElc = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Сайт учебного заведения🌐', url=f'{pir[0][1]}')],
+    [InlineKeyboardButton(text='Что такое "Проходной бал"?', callback_data='prohodnoy')],
     [InlineKeyboardButton(text='Назад📌', callback_data='Popadv1')]
 ])
+    user_id = callback.from_user.id
+    cursor.execute('INSERT OR REPLACE INTO lastcon(user_id, lastdata) VALUES (?, ?)',(user_id,'SpbAdv1'))
+    conn.commit()
     await callback.answer('')
     await callback.message.edit_text(f'{pir[0][4]}\nГород - {pir[0][0]}\nПроходной бал бюджет - {pir[0][2]}\nПроходной бал платное - {pir[0][3]}',reply_markup=YrFedYnElc)
 
@@ -786,8 +1649,12 @@ async def tsh(callback: CallbackQuery):
     pir = cursor.fetchall()
     YrFedYnElc = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Сайт учебного заведения🌐', url=f'{pir[0][1]}')],
+    [InlineKeyboardButton(text='Что такое "Проходной бал"?', callback_data='prohodnoy')],
     [InlineKeyboardButton(text='Назад📌', callback_data='Popmark1')]
 ])
+    user_id = callback.from_user.id
+    cursor.execute('INSERT OR REPLACE INTO lastcon(user_id, lastdata) VALUES (?, ?)',(user_id,'InzhMark'))
+    conn.commit()
     await callback.answer('')
     await callback.message.edit_text(f'{pir[0][4]}\nГород - {pir[0][0]}\nПроходной бал бюджет - {pir[0][2]}\nПроходной бал платное - {pir[0][3]}',reply_markup=YrFedYnElc)
 
@@ -797,8 +1664,12 @@ async def tsh(callback: CallbackQuery):
     pir = cursor.fetchall()
     YrFedYnElc = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Сайт учебного заведения🌐', url=f'{pir[0][1]}')],
+    [InlineKeyboardButton(text='Что такое "Проходной бал"?', callback_data='prohodnoy')],
     [InlineKeyboardButton(text='Назад📌', callback_data='Popmark1')]
 ])
+    user_id = callback.from_user.id
+    cursor.execute('INSERT OR REPLACE INTO lastcon(user_id, lastdata) VALUES (?, ?)',(user_id,'MarkRus'))
+    conn.commit()
     await callback.answer('')
     await callback.message.edit_text(f'{pir[0][4]}\nГород - {pir[0][0]}\nПроходной бал бюджет - {pir[0][2]}\nПроходной бал платное - {pir[0][3]}',reply_markup=YrFedYnElc)
 
@@ -808,8 +1679,12 @@ async def tsh(callback: CallbackQuery):
     pir = cursor.fetchall()
     YrFedYnElc = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Сайт учебного заведения🌐', url=f'{pir[0][1]}')],
+    [InlineKeyboardButton(text='Что такое "Проходной бал"?', callback_data='prohodnoy')],
     [InlineKeyboardButton(text='Назад📌', callback_data='Popmark1')]
 ])
+    user_id = callback.from_user.id
+    cursor.execute('INSERT OR REPLACE INTO lastcon(user_id, lastdata) VALUES (?, ?)',(user_id,'MarkSBGY'))
+    conn.commit()
     await callback.answer('')
     await callback.message.edit_text(f'{pir[0][4]}\nГород - {pir[0][0]}\nПроходной бал бюджет - {pir[0][2]}\nПроходной бал платное - {pir[0][3]}',reply_markup=YrFedYnElc)
 
@@ -819,8 +1694,12 @@ async def tsh(callback: CallbackQuery):
     pir = cursor.fetchall()
     YrFedYnElc = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Сайт учебного заведения🌐', url=f'{pir[0][1]}')],
+    [InlineKeyboardButton(text='Что такое "Проходной бал"?', callback_data='prohodnoy')],
     [InlineKeyboardButton(text='Назад📌', callback_data='Popmark1')]
 ])
+    user_id = callback.from_user.id
+    cursor.execute('INSERT OR REPLACE INTO lastcon(user_id, lastdata) VALUES (?, ?)',(user_id,'SPBGYMARK'))
+    conn.commit()
     await callback.answer('')
     await callback.message.edit_text(f'{pir[0][4]}\nГород - {pir[0][0]}\nПроходной бал бюджет - {pir[0][2]}\nПроходной бал платное - {pir[0][3]}',reply_markup=YrFedYnElc)
 
@@ -830,8 +1709,12 @@ async def tsh(callback: CallbackQuery):
     pir = cursor.fetchall()
     YrFedYnElc = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Сайт учебного заведения🌐', url=f'{pir[0][1]}')],
+    [InlineKeyboardButton(text='Что такое "Проходной бал"?', callback_data='prohodnoy')],
     [InlineKeyboardButton(text='Назад📌', callback_data='Popmark1')]
 ])
+    user_id = callback.from_user.id
+    cursor.execute('INSERT OR REPLACE INTO lastcon(user_id, lastdata) VALUES (?, ?)',(user_id,'MARKSPB'))
+    conn.commit()
     await callback.answer('')
     await callback.message.edit_text(f'{pir[0][4]}\nГород - {pir[0][0]}\nПроходной бал бюджет - {pir[0][2]}\nПроходной бал платное - {pir[0][3]}',reply_markup=YrFedYnElc)
 
@@ -844,8 +1727,12 @@ async def tsh(callback: CallbackQuery):
     pir = cursor.fetchall()
     YrFedYnElc = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Сайт учебного заведения🌐', url=f'{pir[0][1]}')],
+    [InlineKeyboardButton(text='Что такое "Проходной бал"?', callback_data='prohodnoy')],
     [InlineKeyboardButton(text='Назад📌', callback_data='Popbot1')]
 ])
+    user_id = callback.from_user.id
+    cursor.execute('INSERT OR REPLACE INTO lastcon(user_id, lastdata) VALUES (?, ?)',(user_id,'Mosc1Botan'))
+    conn.commit()
     await callback.answer('')
     await callback.message.edit_text(f'{pir[0][4]}\nГород - {pir[0][0]}\nПроходной бал бюджет - {pir[0][2]}\nПроходной бал платное - {pir[0][3]}',reply_markup=YrFedYnElc)
 
@@ -855,8 +1742,12 @@ async def tsh(callback: CallbackQuery):
     pir = cursor.fetchall()
     YrFedYnElc = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Сайт учебного заведения🌐', url=f'{pir[0][1]}')],
+    [InlineKeyboardButton(text='Что такое "Проходной бал"?', callback_data='prohodnoy')],
     [InlineKeyboardButton(text='Назад📌', callback_data='Popbot1')]
 ])
+    user_id = callback.from_user.id
+    cursor.execute('INSERT OR REPLACE INTO lastcon(user_id, lastdata) VALUES (?, ?)',(user_id,'Mosc2Botan'))
+    conn.commit()
     await callback.answer('')
     await callback.message.edit_text(f'{pir[0][4]}\nГород - {pir[0][0]}\nПроходной бал бюджет - {pir[0][2]}\nПроходной бал платное - {pir[0][3]}',reply_markup=YrFedYnElc)
 
@@ -866,6 +1757,7 @@ async def tsh(callback: CallbackQuery):
     pir = cursor.fetchall()
     YrFedYnElc = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Сайт учебного заведения🌐', url=f'{pir[0][1]}')],
+    [InlineKeyboardButton(text='Что такое "Проходной бал"?', callback_data='prohodnoy')],
     [InlineKeyboardButton(text='Назад📌', callback_data='Popbot1')]
 ])
     await callback.answer('')
@@ -877,8 +1769,12 @@ async def tsh(callback: CallbackQuery):
     pir = cursor.fetchall()
     YrFedYnElc = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Сайт учебного заведения🌐', url=f'{pir[0][1]}')],
+    [InlineKeyboardButton(text='Что такое "Проходной бал"?', callback_data='prohodnoy')],
     [InlineKeyboardButton(text='Назад📌', callback_data='Popbot1')]
 ])
+    user_id = callback.from_user.id
+    cursor.execute('INSERT OR REPLACE INTO lastcon(user_id, lastdata) VALUES (?, ?)',(user_id,'TomskBot'))
+    conn.commit()
     await callback.answer('')
     await callback.message.edit_text(f'{pir[0][4]}\nГород - {pir[0][0]}\nПроходной бал бюджет - {pir[0][2]}\nПроходной бал платное - {pir[0][3]}',reply_markup=YrFedYnElc)
 
@@ -888,8 +1784,12 @@ async def tsh(callback: CallbackQuery):
     pir = cursor.fetchall()
     YrFedYnElc = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Сайт учебного заведения🌐', url=f'{pir[0][1]}')],
+    [InlineKeyboardButton(text='Что такое "Проходной бал"?', callback_data='prohodnoy')],
     [InlineKeyboardButton(text='Назад📌', callback_data='Popbot1')]
 ])
+    user_id = callback.from_user.id
+    cursor.execute('INSERT OR REPLACE INTO lastcon(user_id, lastdata) VALUES (?, ?)',(user_id,'Kyrgan1'))
+    conn.commit()
     await callback.answer('')
     await callback.message.edit_text(f'{pir[0][4]}\nГород - {pir[0][0]}\nПроходной бал бюджет - {pir[0][2]}\nПроходной бал платное - {pir[0][3]}',reply_markup=YrFedYnElc)
 
@@ -902,8 +1802,12 @@ async def tsh(callback: CallbackQuery):
     pir = cursor.fetchall()
     YrFedYnElc = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Сайт учебного заведения🌐', url=f'{pir[0][1]}')],
+    [InlineKeyboardButton(text='Что такое "Проходной бал"?', callback_data='prohodnoy')],
     [InlineKeyboardButton(text='Назад📌', callback_data='Popall1')]
 ])
+    user_id = callback.from_user.id
+    cursor.execute('INSERT OR REPLACE INTO lastcon(user_id, lastdata) VALUES (?, ?)',(user_id,'SpbAll'))
+    conn.commit()
     await callback.answer('')
     await callback.message.edit_text(f'{pir[0][4]}\nГород - {pir[0][0]}\nПроходной бал бюджет - {pir[0][2]}\nПроходной бал платное - {pir[0][3]}',reply_markup=YrFedYnElc)
 
@@ -913,8 +1817,12 @@ async def tsh(callback: CallbackQuery):
     pir = cursor.fetchall()
     YrFedYnElc = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Сайт учебного заведения🌐', url=f'{pir[0][1]}')],
+    [InlineKeyboardButton(text='Что такое "Проходной бал"?', callback_data='prohodnoy')],
     [InlineKeyboardButton(text='Назад📌', callback_data='Popall1')]
 ])
+    user_id = callback.from_user.id
+    cursor.execute('INSERT OR REPLACE INTO lastcon(user_id, lastdata) VALUES (?, ?)',(user_id,'SpbAll2'))
+    conn.commit()
     await callback.answer('')
     await callback.message.edit_text(f'{pir[0][4]}\nГород - {pir[0][0]}\nПроходной бал бюджет - {pir[0][2]}\nПроходной бал платное - {pir[0][3]}',reply_markup=YrFedYnElc)
 
@@ -928,8 +1836,12 @@ async def tsh(callback: CallbackQuery):
     pir = cursor.fetchall()
     YrFedYnElc = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Сайт учебного заведения🌐', url=f'{pir[0][1]}')],
+    [InlineKeyboardButton(text='Что такое "Проходной бал"?', callback_data='prohodnoy')],
     [InlineKeyboardButton(text='Назад📌', callback_data='Poppsihoter1')]
 ])
+    user_id = callback.from_user.id
+    cursor.execute('INSERT OR REPLACE INTO lastcon(user_id, lastdata) VALUES (?, ?)',(user_id,'Spb1Psih'))
+    conn.commit()
     await callback.answer('')
     await callback.message.edit_text(f'{pir[0][4]}\nГород - {pir[0][0]}\nПроходной бал бюджет - {pir[0][2]}\nПроходной бал платное - {pir[0][3]}',reply_markup=YrFedYnElc)
 
@@ -939,8 +1851,12 @@ async def tsh(callback: CallbackQuery):
     pir = cursor.fetchall()
     YrFedYnElc = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Сайт учебного заведения🌐', url=f'{pir[0][1]}')],
+    [InlineKeyboardButton(text='Что такое "Проходной бал"?', callback_data='prohodnoy')],
     [InlineKeyboardButton(text='Назад📌', callback_data='Poppsihoter1')]
 ])
+    user_id = callback.from_user.id
+    cursor.execute('INSERT OR REPLACE INTO lastcon(user_id, lastdata) VALUES (?, ?)',(user_id,'Spb2Psih'))
+    conn.commit()
     await callback.answer('')
     await callback.message.edit_text(f'{pir[0][4]}\nГород - {pir[0][0]}\nПроходной бал бюджет - {pir[0][2]}\nПроходной бал платное - {pir[0][3]}',reply_markup=YrFedYnElc)
 
@@ -950,8 +1866,12 @@ async def tsh(callback: CallbackQuery):
     pir = cursor.fetchall()
     YrFedYnElc = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Сайт учебного заведения🌐', url=f'{pir[0][1]}')],
+    [InlineKeyboardButton(text='Что такое "Проходной бал"?', callback_data='prohodnoy')],
     [InlineKeyboardButton(text='Назад📌', callback_data='Poppsihoter1')]
 ])
+    user_id = callback.from_user.id
+    cursor.execute('INSERT OR REPLACE INTO lastcon(user_id, lastdata) VALUES (?, ?)',(user_id,'Spb3Psih'))
+    conn.commit()
     await callback.answer('')
     await callback.message.edit_text(f'{pir[0][4]}\nГород - {pir[0][0]}\nПроходной бал бюджет - {pir[0][2]}\nПроходной бал платное - {pir[0][3]}',reply_markup=YrFedYnElc)
 
@@ -961,8 +1881,12 @@ async def tsh(callback: CallbackQuery):
     pir = cursor.fetchall()
     YrFedYnElc = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Сайт учебного заведения🌐', url=f'{pir[0][1]}')],
+    [InlineKeyboardButton(text='Что такое "Проходной бал"?', callback_data='prohodnoy')],
     [InlineKeyboardButton(text='Назад📌', callback_data='Poppsihoter1')]
 ])
+    user_id = callback.from_user.id
+    cursor.execute('INSERT OR REPLACE INTO lastcon(user_id, lastdata) VALUES (?, ?)',(user_id,'Spb4Psih'))
+    conn.commit()
     await callback.answer('')
     await callback.message.edit_text(f'{pir[0][4]}\nГород - {pir[0][0]}\nПроходной бал бюджет - {pir[0][2]}\nПроходной бал платное - {pir[0][3]}',reply_markup=YrFedYnElc)
 
@@ -972,8 +1896,12 @@ async def tsh(callback: CallbackQuery):
     pir = cursor.fetchall()
     YrFedYnElc = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Сайт учебного заведения🌐', url=f'{pir[0][1]}')],
+    [InlineKeyboardButton(text='Что такое "Проходной бал"?', callback_data='prohodnoy')],
     [InlineKeyboardButton(text='Назад📌', callback_data='Poppsihoter1')]
 ])
+    user_id = callback.from_user.id
+    cursor.execute('INSERT OR REPLACE INTO lastcon(user_id, lastdata) VALUES (?, ?)',(user_id,'Spb5Psih'))
+    conn.commit()
     await callback.answer('')
     await callback.message.edit_text(f'{pir[0][4]}\nГород - {pir[0][0]}\nПроходной бал бюджет - {pir[0][2]}\nПроходной бал платное - {pir[0][3]}',reply_markup=YrFedYnElc)
 
@@ -986,8 +1914,12 @@ async def tsh(callback: CallbackQuery):
     pir = cursor.fetchall()
     YrFedYnElc = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Сайт учебного заведения🌐', url=f'{pir[0][1]}')],
+    [InlineKeyboardButton(text='Что такое "Проходной бал"?', callback_data='prohodnoy')],
     [InlineKeyboardButton(text='Назад📌', callback_data='Popecol1')]
 ])
+    user_id = callback.from_user.id
+    cursor.execute('INSERT OR REPLACE INTO lastcon(user_id, lastdata) VALUES (?, ?)',(user_id,'YralEcol'))
+    conn.commit()
     await callback.answer('')
     await callback.message.edit_text(f'{pir[0][4]}\nГород - {pir[0][0]}\nПроходной бал бюджет - {pir[0][2]}\nПроходной бал платное - {pir[0][3]}',reply_markup=YrFedYnElc)
 
@@ -997,8 +1929,12 @@ async def tsh(callback: CallbackQuery):
     pir = cursor.fetchall()
     YrFedYnElc = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Сайт учебного заведения🌐', url=f'{pir[0][1]}')],
+    [InlineKeyboardButton(text='Что такое "Проходной бал"?', callback_data='prohodnoy')],
     [InlineKeyboardButton(text='Назад📌', callback_data='Popecol1')]
 ])
+    user_id = callback.from_user.id
+    cursor.execute('INSERT OR REPLACE INTO lastcon(user_id, lastdata) VALUES (?, ?)',(user_id,'MosEcol'))
+    conn.commit()
     await callback.answer('')
     await callback.message.edit_text(f'{pir[0][4]}\nГород - {pir[0][0]}\nПроходной бал бюджет - {pir[0][2]}\nПроходной бал платное - {pir[0][3]}',reply_markup=YrFedYnElc)
 
@@ -1008,8 +1944,12 @@ async def tsh(callback: CallbackQuery):
     pir = cursor.fetchall()
     YrFedYnElc = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Сайт учебного заведения🌐', url=f'{pir[0][1]}')],
+    [InlineKeyboardButton(text='Что такое "Проходной бал"?', callback_data='prohodnoy')],
     [InlineKeyboardButton(text='Назад📌', callback_data='Popecol1')]
 ])
+    user_id = callback.from_user.id
+    cursor.execute('INSERT OR REPLACE INTO lastcon(user_id, lastdata) VALUES (?, ?)',(user_id,'DryzhbEcol'))
+    conn.commit()
     await callback.answer('')
     await callback.message.edit_text(f'{pir[0][4]}\nГород - {pir[0][0]}\nПроходной бал бюджет - {pir[0][2]}\nПроходной бал платное - {pir[0][3]}',reply_markup=YrFedYnElc)
 
@@ -1019,8 +1959,12 @@ async def tsh(callback: CallbackQuery):
     pir = cursor.fetchall()
     YrFedYnElc = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Сайт учебного заведения🌐', url=f'{pir[0][1]}')],
+    [InlineKeyboardButton(text='Что такое "Проходной бал"?', callback_data='prohodnoy')],
     [InlineKeyboardButton(text='Назад📌', callback_data='Popecol1')]
 ])
+    user_id = callback.from_user.id
+    cursor.execute('INSERT OR REPLACE INTO lastcon(user_id, lastdata) VALUES (?, ?)',(user_id,'YfaEcol'))
+    conn.commit()
     await callback.answer('')
     await callback.message.edit_text(f'{pir[0][4]}\nГород - {pir[0][0]}\nПроходной бал бюджет - {pir[0][2]}\nПроходной бал платное - {pir[0][3]}',reply_markup=YrFedYnElc)
 
@@ -1030,8 +1974,12 @@ async def tsh(callback: CallbackQuery):
     pir = cursor.fetchall()
     YrFedYnElc = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Сайт учебного заведения🌐', url=f'{pir[0][1]}')],
+    [InlineKeyboardButton(text='Что такое "Проходной бал"?', callback_data='prohodnoy')],
     [InlineKeyboardButton(text='Назад📌', callback_data='Popecol1')]
 ])
+    user_id = callback.from_user.id
+    cursor.execute('INSERT OR REPLACE INTO lastcon(user_id, lastdata) VALUES (?, ?)',(user_id,'SpbEcol'))
+    conn.commit()
     await callback.answer('')
     await callback.message.edit_text(f'{pir[0][4]}\nГород - {pir[0][0]}\nПроходной бал бюджет - {pir[0][2]}\nПроходной бал платное - {pir[0][3]}',reply_markup=YrFedYnElc)
 
@@ -1044,8 +1992,12 @@ async def tsh(callback: CallbackQuery):
     pir = cursor.fetchall()
     YrFedYnElc = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Сайт учебного заведения🌐', url=f'{pir[0][1]}')],
+    [InlineKeyboardButton(text='Что такое "Проходной бал"?', callback_data='prohodnoy')],
     [InlineKeyboardButton(text='Назад📌', callback_data='Pophim1')]
 ])
+    user_id = callback.from_user.id
+    cursor.execute('INSERT OR REPLACE INTO lastcon(user_id, lastdata) VALUES (?, ?)',(user_id,'RosDruzh'))
+    conn.commit()
     await callback.answer('')
     await callback.message.edit_text(f'{pir[0][4]}\nГород - {pir[0][0]}\nПроходной бал бюджет - {pir[0][2]}\nПроходной бал платное - {pir[0][3]}',reply_markup=YrFedYnElc)
 
@@ -1055,8 +2007,12 @@ async def tsh(callback: CallbackQuery):
     pir = cursor.fetchall()
     YrFedYnElc = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Сайт учебного заведения🌐', url=f'{pir[0][1]}')],
+    [InlineKeyboardButton(text='Что такое "Проходной бал"?', callback_data='prohodnoy')],
     [InlineKeyboardButton(text='Назад📌', callback_data='Pophim1')]
 ])
+    user_id = callback.from_user.id
+    cursor.execute('INSERT OR REPLACE INTO lastcon(user_id, lastdata) VALUES (?, ?)',(user_id,'SPBGYHim'))
+    conn.commit()
     await callback.answer('')
     await callback.message.edit_text(f'{pir[0][4]}\nГород - {pir[0][0]}\nПроходной бал бюджет - {pir[0][2]}\nПроходной бал платное - {pir[0][3]}',reply_markup=YrFedYnElc)
 
@@ -1066,8 +2022,12 @@ async def tsh(callback: CallbackQuery):
     pir = cursor.fetchall()
     YrFedYnElc = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Сайт учебного заведения🌐', url=f'{pir[0][1]}')],
+    [InlineKeyboardButton(text='Что такое "Проходной бал"?', callback_data='prohodnoy')],
     [InlineKeyboardButton(text='Назад📌', callback_data='Pophim1')]
 ])
+    user_id = callback.from_user.id
+    cursor.execute('INSERT OR REPLACE INTO lastcon(user_id, lastdata) VALUES (?, ?)',(user_id,'tomskYn'))
+    conn.commit()
     await callback.answer('')
     await callback.message.edit_text(f'{pir[0][4]}\nГород - {pir[0][0]}\nПроходной бал бюджет - {pir[0][2]}\nПроходной бал платное - {pir[0][3]}',reply_markup=YrFedYnElc)
 
@@ -1077,8 +2037,12 @@ async def tsh(callback: CallbackQuery):
     pir = cursor.fetchall()
     YrFedYnElc = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Сайт учебного заведения🌐', url=f'{pir[0][1]}')],
+    [InlineKeyboardButton(text='Что такое "Проходной бал"?', callback_data='prohodnoy')],
     [InlineKeyboardButton(text='Назад📌', callback_data='Pophim1')]
 ])
+    user_id = callback.from_user.id
+    cursor.execute('INSERT OR REPLACE INTO lastcon(user_id, lastdata) VALUES (?, ?)',(user_id,'YralYn'))
+    conn.commit()
     await callback.answer('')
     await callback.message.edit_text(f'{pir[0][4]}\nГород - {pir[0][0]}\nПроходной бал бюджет - {pir[0][2]}\nПроходной бал платное - {pir[0][3]}',reply_markup=YrFedYnElc)
 
@@ -1088,8 +2052,12 @@ async def tsh(callback: CallbackQuery):
     pir = cursor.fetchall()
     YrFedYnElc = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Сайт учебного заведения🌐', url=f'{pir[0][1]}')],
+    [InlineKeyboardButton(text='Что такое "Проходной бал"?', callback_data='prohodnoy')],
     [InlineKeyboardButton(text='Назад📌', callback_data='Pophim1')]
 ])
+    user_id = callback.from_user.id
+    cursor.execute('INSERT OR REPLACE INTO lastcon(user_id, lastdata) VALUES (?, ?)',(user_id,'UFYROST'))
+    conn.commit()
     await callback.answer('')
     await callback.message.edit_text(f'{pir[0][4]}\nГород - {pir[0][0]}\nПроходной бал бюджет - {pir[0][2]}\nПроходной бал платное - {pir[0][3]}',reply_markup=YrFedYnElc)
 
@@ -1102,8 +2070,12 @@ async def tsh(callback: CallbackQuery):
     pir = cursor.fetchall()
     YrFedYnElc = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Сайт учебного заведения🌐', url=f'{pir[0][1]}')],
+    [InlineKeyboardButton(text='Что такое "Проходной бал"?', callback_data='prohodnoy')],
     [InlineKeyboardButton(text='Назад📌', callback_data='Popbuh1')]
 ])
+    user_id = callback.from_user.id
+    cursor.execute('INSERT OR REPLACE INTO lastcon(user_id, lastdata) VALUES (?, ?)',(user_id,'MosBuh'))
+    conn.commit()
     await callback.answer('')
     await callback.message.edit_text(f'{pir[0][4]}\nГород - {pir[0][0]}\nПроходной бал бюджет - {pir[0][2]}\nПроходной бал платное - {pir[0][3]}',reply_markup=YrFedYnElc)
 
@@ -1113,8 +2085,12 @@ async def tsh(callback: CallbackQuery):
     pir = cursor.fetchall()
     YrFedYnElc = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Сайт учебного заведения🌐', url=f'{pir[0][1]}')],
+    [InlineKeyboardButton(text='Что такое "Проходной бал"?', callback_data='prohodnoy')],
     [InlineKeyboardButton(text='Назад📌', callback_data='Popbuh1')]
 ])
+    user_id = callback.from_user.id
+    cursor.execute('INSERT OR REPLACE INTO lastcon(user_id, lastdata) VALUES (?, ?)',(user_id,'SpbBuh'))
+    conn.commit()
     await callback.answer('')
     await callback.message.edit_text(f'{pir[0][4]}\nГород - {pir[0][0]}\nПроходной бал бюджет - {pir[0][2]}\nПроходной бал платное - {pir[0][3]}',reply_markup=YrFedYnElc)
 
@@ -1124,8 +2100,12 @@ async def tsh(callback: CallbackQuery):
     pir = cursor.fetchall()
     YrFedYnElc = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Сайт учебного заведения🌐', url=f'{pir[0][1]}')],
+    [InlineKeyboardButton(text='Что такое "Проходной бал"?', callback_data='prohodnoy')],
     [InlineKeyboardButton(text='Назад📌', callback_data='Popbuh1')]
 ])
+    user_id = callback.from_user.id
+    cursor.execute('INSERT OR REPLACE INTO lastcon(user_id, lastdata) VALUES (?, ?)',(user_id,'SPBBUHG'))
+    conn.commit()
     await callback.answer('')
     await callback.message.edit_text(f'{pir[0][4]}\nГород - {pir[0][0]}\nПроходной бал бюджет - {pir[0][2]}\nПроходной бал платное - {pir[0][3]}',reply_markup=YrFedYnElc)
 
@@ -1135,8 +2115,12 @@ async def tsh(callback: CallbackQuery):
     pir = cursor.fetchall()
     YrFedYnElc = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Сайт учебного заведения🌐', url=f'{pir[0][1]}')],
+    [InlineKeyboardButton(text='Что такое "Проходной бал"?', callback_data='prohodnoy')],
     [InlineKeyboardButton(text='Назад📌', callback_data='Popbuh1')]
 ])
+    user_id = callback.from_user.id
+    cursor.execute('INSERT OR REPLACE INTO lastcon(user_id, lastdata) VALUES (?, ?)',(user_id,'NacBuhNN'))
+    conn.commit()
     await callback.answer('')
     await callback.message.edit_text(f'{pir[0][4]}\nГород - {pir[0][0]}\nПроходной бал бюджет - {pir[0][2]}\nПроходной бал платное - {pir[0][3]}',reply_markup=YrFedYnElc)
 
@@ -1146,8 +2130,12 @@ async def tsh(callback: CallbackQuery):
     pir = cursor.fetchall()
     YrFedYnElc = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Сайт учебного заведения🌐', url=f'{pir[0][1]}')],
+    [InlineKeyboardButton(text='Что такое "Проходной бал"?', callback_data='prohodnoy')],
     [InlineKeyboardButton(text='Назад📌', callback_data='Popbuh1')]
 ])
+    user_id = callback.from_user.id
+    cursor.execute('INSERT OR REPLACE INTO lastcon(user_id, lastdata) VALUES (?, ?)',(user_id,'VolgBuh'))
+    conn.commit()
     await callback.answer('')
     await callback.message.edit_text(f'{pir[0][4]}\nГород - {pir[0][0]}\nПроходной бал бюджет - {pir[0][2]}\nПроходной бал платное - {pir[0][3]}',reply_markup=YrFedYnElc)
 
@@ -1160,8 +2148,12 @@ async def tsh(callback: CallbackQuery):
     pir = cursor.fetchall()
     YrFedYnElc = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Сайт учебного заведения🌐', url=f'{pir[0][1]}')],
+    [InlineKeyboardButton(text='Что такое "Проходной бал"?', callback_data='prohodnoy')],
     [InlineKeyboardButton(text='Назад📌', callback_data='Popfin1')]
 ])
+    user_id = callback.from_user.id
+    cursor.execute('INSERT OR REPLACE INTO lastcon(user_id, lastdata) VALUES (?, ?)',(user_id,'MTI'))
+    conn.commit()
     await callback.answer('')
     await callback.message.edit_text(f'{pir[0][4]}\nГород - {pir[0][0]}\nПроходной бал бюджет - {pir[0][2]}\nПроходной бал платное - {pir[0][3]}',reply_markup=YrFedYnElc)
 
@@ -1171,8 +2163,12 @@ async def tsh(callback: CallbackQuery):
     pir = cursor.fetchall()
     YrFedYnElc = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Сайт учебного заведения🌐', url=f'{pir[0][1]}')],
+    [InlineKeyboardButton(text='Что такое "Проходной бал"?', callback_data='prohodnoy')],
     [InlineKeyboardButton(text='Назад📌', callback_data='Popfin1')]
 ])
+    user_id = callback.from_user.id
+    cursor.execute('INSERT OR REPLACE INTO lastcon(user_id, lastdata) VALUES (?, ?)',(user_id,'SPbFin'))
+    conn.commit()
     await callback.answer('')
     await callback.message.edit_text(f'{pir[0][4]}\nГород - {pir[0][0]}\nПроходной бал бюджет - {pir[0][2]}\nПроходной бал платное - {pir[0][3]}',reply_markup=YrFedYnElc)
 
@@ -1182,8 +2178,12 @@ async def tsh(callback: CallbackQuery):
     pir = cursor.fetchall()
     YrFedYnElc = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Сайт учебного заведения🌐', url=f'{pir[0][1]}')],
+    [InlineKeyboardButton(text='Что такое "Проходной бал"?', callback_data='prohodnoy')],
     [InlineKeyboardButton(text='Назад📌', callback_data='Popfin1')]
 ])
+    user_id = callback.from_user.id
+    cursor.execute('INSERT OR REPLACE INTO lastcon(user_id, lastdata) VALUES (?, ?)',(user_id,'RANGHIS'))
+    conn.commit()
     await callback.answer('')
     await callback.message.edit_text(f'{pir[0][4]}\nГород - {pir[0][0]}\nПроходной бал бюджет - {pir[0][2]}\nПроходной бал платное - {pir[0][3]}',reply_markup=YrFedYnElc)
 
@@ -1193,8 +2193,12 @@ async def tsh(callback: CallbackQuery):
     pir = cursor.fetchall()
     YrFedYnElc = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Сайт учебного заведения🌐', url=f'{pir[0][1]}')],
+    [InlineKeyboardButton(text='Что такое "Проходной бал"?', callback_data='prohodnoy')],
     [InlineKeyboardButton(text='Назад📌', callback_data='Popfin1')]
 ])
+    user_id = callback.from_user.id
+    cursor.execute('INSERT OR REPLACE INTO lastcon(user_id, lastdata) VALUES (?, ?)',(user_id,'SEVFIN'))
+    conn.commit()
     await callback.answer('')
     await callback.message.edit_text(f'{pir[0][4]}\nГород - {pir[0][0]}\nПроходной бал бюджет - {pir[0][2]}\nПроходной бал платное - {pir[0][3]}',reply_markup=YrFedYnElc)
 
@@ -1204,8 +2208,12 @@ async def tsh(callback: CallbackQuery):
     pir = cursor.fetchall()
     YrFedYnElc = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Сайт учебного заведения🌐', url=f'{pir[0][1]}')],
+    [InlineKeyboardButton(text='Что такое "Проходной бал"?', callback_data='prohodnoy')],
     [InlineKeyboardButton(text='Назад📌', callback_data='Popfin1')]
 ])
+    user_id = callback.from_user.id
+    cursor.execute('INSERT OR REPLACE INTO lastcon(user_id, lastdata) VALUES (?, ?)',(user_id,'YralFin'))
+    conn.commit()
     await callback.answer('')
     await callback.message.edit_text(f'{pir[0][4]}\nГород - {pir[0][0]}\nПроходной бал бюджет - {pir[0][2]}\nПроходной бал платное - {pir[0][3]}',reply_markup=YrFedYnElc)
 
@@ -1218,8 +2226,12 @@ async def tsh(callback: CallbackQuery):
     pir = cursor.fetchall()
     YrFedYnElc = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Сайт учебного заведения🌐', url=f'{pir[0][1]}')],
+    [InlineKeyboardButton(text='Что такое "Проходной бал"?', callback_data='prohodnoy')],
     [InlineKeyboardButton(text='Назад📌', callback_data='Popecon1')]
 ])
+    user_id = callback.from_user.id
+    cursor.execute('INSERT OR REPLACE INTO lastcon(user_id, lastdata) VALUES (?, ?)',(user_id,'NIYVHE'))
+    conn.commit()
     await callback.answer('')
     await callback.message.edit_text(f'{pir[0][4]}\nГород - {pir[0][0]}\nПроходной бал бюджет - {pir[0][2]}\nПроходной бал платное - {pir[0][3]}',reply_markup=YrFedYnElc)
 
@@ -1229,8 +2241,12 @@ async def tsh(callback: CallbackQuery):
     pir = cursor.fetchall()
     YrFedYnElc = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Сайт учебного заведения🌐', url=f'{pir[0][1]}')],
+    [InlineKeyboardButton(text='Что такое "Проходной бал"?', callback_data='prohodnoy')],
     [InlineKeyboardButton(text='Назад📌', callback_data='Popecon1')]
 ])
+    user_id = callback.from_user.id
+    cursor.execute('INSERT OR REPLACE INTO lastcon(user_id, lastdata) VALUES (?, ?)',(user_id,'SPSPB'))
+    conn.commit()
     await callback.answer('')
     await callback.message.edit_text(f'{pir[0][4]}\nГород - {pir[0][0]}\nПроходной бал бюджет - {pir[0][2]}\nПроходной бал платное - {pir[0][3]}',reply_markup=YrFedYnElc)
 
@@ -1240,8 +2256,12 @@ async def tsh(callback: CallbackQuery):
     pir = cursor.fetchall()
     YrFedYnElc = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Сайт учебного заведения🌐', url=f'{pir[0][1]}')],
+    [InlineKeyboardButton(text='Что такое "Проходной бал"?', callback_data='prohodnoy')],
     [InlineKeyboardButton(text='Назад📌', callback_data='Popecon1')]
 ])
+    user_id = callback.from_user.id
+    cursor.execute('INSERT OR REPLACE INTO lastcon(user_id, lastdata) VALUES (?, ?)',(user_id,'MGY'))
+    conn.commit()
     await callback.answer('')
     await callback.message.edit_text(f'{pir[0][4]}\nГород - {pir[0][0]}\nПроходной бал бюджет - {pir[0][2]}\nПроходной бал платное - {pir[0][3]}',reply_markup=YrFedYnElc)
 
@@ -1251,8 +2271,12 @@ async def tsh(callback: CallbackQuery):
     pir = cursor.fetchall()
     YrFedYnElc = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Сайт учебного заведения🌐', url=f'{pir[0][1]}')],
+    [InlineKeyboardButton(text='Что такое "Проходной бал"?', callback_data='prohodnoy')],
     [InlineKeyboardButton(text='Назад📌', callback_data='Popecon1')]
 ])
+    user_id = callback.from_user.id
+    cursor.execute('INSERT OR REPLACE INTO lastcon(user_id, lastdata) VALUES (?, ?)',(user_id,'NGY'))
+    conn.commit()
     await callback.answer('')
     await callback.message.edit_text(f'{pir[0][4]}\nГород - {pir[0][0]}\nПроходной бал бюджет - {pir[0][2]}\nПроходной бал платное - {pir[0][3]}',reply_markup=YrFedYnElc)
 
@@ -1262,8 +2286,12 @@ async def tsh(callback: CallbackQuery):
     pir = cursor.fetchall()
     YrFedYnElc = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Сайт учебного заведения🌐', url=f'{pir[0][1]}')],
+    [InlineKeyboardButton(text='Что такое "Проходной бал"?', callback_data='prohodnoy')],
     [InlineKeyboardButton(text='Назад📌', callback_data='Popecon1')]
 ])
+    user_id = callback.from_user.id
+    cursor.execute('INSERT OR REPLACE INTO lastcon(user_id, lastdata) VALUES (?, ?)',(user_id,'ALTAY'))
+    conn.commit()
     await callback.answer('')
     await callback.message.edit_text(f'{pir[0][4]}\nГород - {pir[0][0]}\nПроходной бал бюджет - {pir[0][2]}\nПроходной бал платное - {pir[0][3]}',reply_markup=YrFedYnElc)
 
@@ -1276,8 +2304,12 @@ async def tsh(callback: CallbackQuery):
     pir = cursor.fetchall()
     YrFedYnElc = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Сайт учебного заведения🌐', url=f'{pir[0][1]}')],
+    [InlineKeyboardButton(text='Что такое "Проходной бал"?', callback_data='prohodnoy')],
     [InlineKeyboardButton(text='Назад📌', callback_data='Popit1')]
 ])
+    user_id = callback.from_user.id
+    cursor.execute('INSERT OR REPLACE INTO lastcon(user_id, lastdata) VALUES (?, ?)',(user_id,'MGTYBay'))
+    conn.commit()
     await callback.answer('')
     await callback.message.edit_text(f'{pir[0][4]}\nГород - {pir[0][0]}\nПроходной бал бюджет - {pir[0][2]}\nПроходной бал платное - {pir[0][3]}',reply_markup=YrFedYnElc)
 
@@ -1287,8 +2319,12 @@ async def tsh(callback: CallbackQuery):
     pir = cursor.fetchall()
     YrFedYnElc = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Сайт учебного заведения🌐', url=f'{pir[0][1]}')],
+    [InlineKeyboardButton(text='Что такое "Проходной бал"?', callback_data='prohodnoy')],
     [InlineKeyboardButton(text='Назад📌', callback_data='Popit1')]
 ])
+    user_id = callback.from_user.id
+    cursor.execute('INSERT OR REPLACE INTO lastcon(user_id, lastdata) VALUES (?, ?)',(user_id,'ITMO'))
+    conn.commit()
     await callback.answer('')
     await callback.message.edit_text(f'{pir[0][4]}\nГород - {pir[0][0]}\nПроходной бал бюджет - {pir[0][2]}\nПроходной бал платное - {pir[0][3]}',reply_markup=YrFedYnElc)
 
@@ -1298,8 +2334,12 @@ async def tsh(callback: CallbackQuery):
     pir = cursor.fetchall()
     YrFedYnElc = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Сайт учебного заведения🌐', url=f'{pir[0][1]}')],
+    [InlineKeyboardButton(text='Что такое "Проходной бал"?', callback_data='prohodnoy')],
     [InlineKeyboardButton(text='Назад📌', callback_data='Popit1')]
 ])
+    user_id = callback.from_user.id
+    cursor.execute('INSERT OR REPLACE INTO lastcon(user_id, lastdata) VALUES (?, ?)',(user_id,'SPBGY'))
+    conn.commit()
     await callback.answer('')
     await callback.message.edit_text(f'{pir[0][4]}\nГород - {pir[0][0]}\nПроходной бал бюджет - {pir[0][2]}\nПроходной бал платное - {pir[0][3]}',reply_markup=YrFedYnElc)
 
@@ -1309,8 +2349,12 @@ async def tsh(callback: CallbackQuery):
     pir = cursor.fetchall()
     YrFedYnElc = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Сайт учебного заведения🌐', url=f'{pir[0][1]}')],
+    [InlineKeyboardButton(text='Что такое "Проходной бал"?', callback_data='prohodnoy')],
     [InlineKeyboardButton(text='Назад📌', callback_data='Popit1')]
 ])
+    user_id = callback.from_user.id
+    cursor.execute('INSERT OR REPLACE INTO lastcon(user_id, lastdata) VALUES (?, ?)',(user_id,'YrFedElc'))
+    conn.commit()
     await callback.answer('')
     await callback.message.edit_text(f'{pir[0][4]}\nГород - {pir[0][0]}\nПроходной бал бюджет - {pir[0][2]}\nПроходной бал платное - {pir[0][3]}',reply_markup=YrFedYnElc)
 
@@ -1320,8 +2364,12 @@ async def tsh(callback: CallbackQuery):
     pir = cursor.fetchall()
     YrFedYnElc = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Сайт учебного заведения🌐', url=f'{pir[0][1]}')],
+    [InlineKeyboardButton(text='Что такое "Проходной бал"?', callback_data='prohodnoy')],
     [InlineKeyboardButton(text='Назад📌', callback_data='Popit1')]
 ])
+    user_id = callback.from_user.id
+    cursor.execute('INSERT OR REPLACE INTO lastcon(user_id, lastdata) VALUES (?, ?)',(user_id,'KazFed'))
+    conn.commit()
     await callback.answer('')
     await callback.message.edit_text(f'{pir[0][4]}\nГород - {pir[0][0]}\nПроходной бал бюджет - {pir[0][2]}\nПроходной бал платное - {pir[0][3]}',reply_markup=YrFedYnElc)
 
@@ -1336,8 +2384,12 @@ async def tsh(callback: CallbackQuery):
     pir = cursor.fetchall()
     YrFedYnElc = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Сайт учебного заведения🌐', url=f'{pir[0][1]}')],
+    [InlineKeyboardButton(text='Что такое "Проходной бал"?', callback_data='prohodnoy')],
     [InlineKeyboardButton(text='Назад📌', callback_data='Popinz1')]
 ])
+    user_id = callback.from_user.id
+    cursor.execute('INSERT OR REPLACE INTO lastcon(user_id, lastdata) VALUES (?, ?)',(user_id,'YrFedYnElc'))
+    conn.commit()
     await callback.answer('')
     await callback.message.edit_text(f'{pir[0][4]}\nГород - {pir[0][0]}\nПроходной бал бюджет - {pir[0][2]}\nПроходной бал платное - {pir[0][3]}',reply_markup=YrFedYnElc)
 
@@ -1347,8 +2399,12 @@ async def tsh(callback: CallbackQuery):
     pir = cursor.fetchall()
     YrFedYnElc = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Сайт учебного заведения🌐', url=f'{pir[0][1]}')],
+    [InlineKeyboardButton(text='Что такое "Проходной бал"?', callback_data='prohodnoy')],
     [InlineKeyboardButton(text='Назад📌', callback_data='Popinz1')]
 ])
+    user_id = callback.from_user.id
+    cursor.execute('INSERT OR REPLACE INTO lastcon(user_id, lastdata) VALUES (?, ?)',(user_id,'SevGosYn'))
+    conn.commit()
     await callback.answer('')
     await callback.message.edit_text(f'{pir[0][4]}\nГород - {pir[0][0]}\nПроходной бал бюджет - {pir[0][2]}\nПроходной бал платное - {pir[0][3]}',reply_markup=YrFedYnElc)
 
@@ -1358,8 +2414,12 @@ async def tsh(callback: CallbackQuery):
     pir = cursor.fetchall()
     YrFedYnElc = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Сайт учебного заведения🌐', url=f'{pir[0][1]}')],
+    [InlineKeyboardButton(text='Что такое "Проходной бал"?', callback_data='prohodnoy')],
     [InlineKeyboardButton(text='Назад📌', callback_data='Popinz1')]
 ])
+    user_id = callback.from_user.id
+    cursor.execute('INSERT OR REPLACE INTO lastcon(user_id, lastdata) VALUES (?, ?)',(user_id,'MosStankin'))
+    conn.commit()
     await callback.answer('')
     await callback.message.edit_text(f'{pir[0][4]}\nГород - {pir[0][0]}\nПроходной бал бюджет - {pir[0][2]}\nПроходной бал платное - {pir[0][3]}',reply_markup=YrFedYnElc)
 
@@ -1369,8 +2429,12 @@ async def tsh(callback: CallbackQuery):
     pir = cursor.fetchall()
     YrFedYnElc = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Сайт учебного заведения🌐', url=f'{pir[0][1]}')],
+    [InlineKeyboardButton(text='Что такое "Проходной бал"?', callback_data='prohodnoy')],
     [InlineKeyboardButton(text='Назад📌', callback_data='Popinz1')]
 ])
+    user_id = callback.from_user.id
+    cursor.execute('INSERT OR REPLACE INTO lastcon(user_id, lastdata) VALUES (?, ?)',(user_id,'SaintPGY'))
+    conn.commit()
     await callback.answer('')
     await callback.message.edit_text(f'{pir[0][4]}\nГород - {pir[0][0]}\nПроходной бал бюджет - {pir[0][2]}\nПроходной бал платное - {pir[0][3]}',reply_markup=YrFedYnElc)
 
@@ -1381,14 +2445,30 @@ async def tsh(callback: CallbackQuery):
     pir = cursor.fetchall()
     YrFedYnElc = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Сайт учебного заведения🌐', url=f'{pir[0][1]}')],
+    [InlineKeyboardButton(text='Что такое "Проходной бал"?', callback_data='prohodnoy')],
     [InlineKeyboardButton(text='Назад📌', callback_data='Popinz1')]
 ])
+    user_id = callback.from_user.id
+    cursor.execute('INSERT OR REPLACE INTO lastcon(user_id, lastdata) VALUES (?, ?)',(user_id,'SaintPPYPV'))
+    conn.commit()
     await callback.answer('')
     await callback.message.edit_text(f'{pir[0][4]}\nГород - {pir[0][0]}\nПроходной бал бюджет - {pir[0][2]}\nПроходной бал платное - {pir[0][3]}',reply_markup=YrFedYnElc)
 
 # endregion
 
 
+@router.callback_query(F.data=='prohodnoy')
+async def tsh(callback: CallbackQuery):
+    user_id = callback.from_user.id
+    cursor.execute('SELECT lastdata FROM lastcon WHERE user_id = ?',(user_id,))
+    pir = cursor.fetchone()
+    YrFedYnElc = InlineKeyboardMarkup(inline_keyboard=[
+    [InlineKeyboardButton(text='Назад📌', callback_data=f'{pir[0]}')]
+])
+    user_id = callback.from_user.id
+ 
+    await callback.answer('')
+    await callback.message.edit_text('Средний балл ЕГЭ в вузе\n\n\nСредний балл ЕГЭ в вузе определяется для всего вуза и является официальной статистикой, которую он сообщает в Минобрнауки для анализа качества приема.\n\nСредний балл ЕГЭ вуза — это минимальный средний балл одного ЕГЭ крайнего абитуриента, поступившего в вуз. Рассчитывается он так: сумма баллов ЕГЭ по экзаменам, которые необходимы для участия в конкурсе на программы вуза, деленная на количество экзаменов, которые должен сдать абитуриент.',reply_markup=YrFedYnElc)
 
 
 
@@ -1492,6 +2572,11 @@ async def tsh(callback: CallbackQuery):
     cursor.execute(f'SELECT Vyzteg FROM directions WHERE code = "F1"')
     aba1 = cursor.fetchone()
     aba=aba1[0]
+    cursor.execute('UPDATE vyzf SET gorin1 = NULL WHERE user_id = ?',(user_id,) )
+    cursor.execute('UPDATE vyzf SET gorin2 = NULL WHERE user_id = ?',(user_id,) )
+    cursor.execute('UPDATE vyzf SET gorin3 = NULL WHERE user_id = ?',(user_id,) )
+    cursor.execute('INSERT OR IGNORE INTO vyzf(user_id) VALUES (?)',(user_id,))
+    conn.commit()   
     podrob = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Вузы по направлению🏫', callback_data=f'{aba}')],
     [InlineKeyboardButton(text='Бесплатные курсы📚', url = 'https://dopobr.petersburgedu.ru')],
@@ -1510,6 +2595,11 @@ async def tsh(callback: CallbackQuery):
     cursor.execute(f'SELECT Vyzteg FROM directions WHERE code = "F2"')
     aba1 = cursor.fetchone()
     aba=aba1[0]
+    cursor.execute('UPDATE vyzf SET gorin1 = NULL WHERE user_id = ?',(user_id,) )
+    cursor.execute('UPDATE vyzf SET gorin2 = NULL WHERE user_id = ?',(user_id,) )
+    cursor.execute('UPDATE vyzf SET gorin3 = NULL WHERE user_id = ?',(user_id,) )
+    cursor.execute('INSERT OR IGNORE INTO vyzf(user_id) VALUES (?)',(user_id,))
+    conn.commit()   
     podrob = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Вузы по направлению🏫', callback_data=f'{aba}')],
     [InlineKeyboardButton(text='Бесплатные курсы📚', url = 'https://dopobr.petersburgedu.ru')],
@@ -1528,6 +2618,11 @@ async def tsh(callback: CallbackQuery):
     cursor.execute(f'SELECT Vyzteg FROM directions WHERE code = "F3"')
     aba1 = cursor.fetchone()
     aba=aba1[0]
+    cursor.execute('UPDATE vyzf SET gorin1 = NULL WHERE user_id = ?',(user_id,) )
+    cursor.execute('UPDATE vyzf SET gorin2 = NULL WHERE user_id = ?',(user_id,) )
+    cursor.execute('UPDATE vyzf SET gorin3 = NULL WHERE user_id = ?',(user_id,) )
+    cursor.execute('INSERT OR IGNORE INTO vyzf(user_id) VALUES (?)',(user_id,))
+    conn.commit()
     podrob = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Вузы по направлению🏫', callback_data=f'{aba}')],
     [InlineKeyboardButton(text='Бесплатные курсы📚', url = 'https://dopobr.petersburgedu.ru')],
@@ -1545,6 +2640,11 @@ async def tsh(callback: CallbackQuery):
     cursor.execute(f'SELECT Vyzteg FROM directions WHERE code = "F4"')
     aba1 = cursor.fetchone()
     aba=aba1[0]
+    cursor.execute('UPDATE vyzf SET gorin1 = NULL WHERE user_id = ?',(user_id,) )
+    cursor.execute('UPDATE vyzf SET gorin2 = NULL WHERE user_id = ?',(user_id,) )
+    cursor.execute('UPDATE vyzf SET gorin3 = NULL WHERE user_id = ?',(user_id,) )
+    cursor.execute('INSERT OR IGNORE INTO vyzf(user_id) VALUES (?)',(user_id,))
+    conn.commit()   
     podrob = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Вузы по направлению🏫', callback_data=f'{aba}')],
     [InlineKeyboardButton(text='Бесплатные курсы📚', url = 'https://dopobr.petersburgedu.ru')],
@@ -1562,6 +2662,11 @@ async def tsh(callback: CallbackQuery):
     cursor.execute(f'SELECT Vyzteg FROM directions WHERE code = "F5"')
     aba1 = cursor.fetchone()
     aba=aba1[0]
+    cursor.execute('UPDATE vyzf SET gorin1 = NULL WHERE user_id = ?',(user_id,) )
+    cursor.execute('UPDATE vyzf SET gorin2 = NULL WHERE user_id = ?',(user_id,) )
+    cursor.execute('UPDATE vyzf SET gorin3 = NULL WHERE user_id = ?',(user_id,) )
+    cursor.execute('INSERT OR IGNORE INTO vyzf(user_id) VALUES (?)',(user_id,))
+    conn.commit()   
     podrob = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Вузы по направлению🏫', callback_data=f'{aba}')],
     [InlineKeyboardButton(text='Бесплатные курсы📚', url = 'https://dopobr.petersburgedu.ru')],
@@ -1581,6 +2686,11 @@ async def tsh(callback: CallbackQuery):
     cursor.execute(f'SELECT Vyzteg FROM directions WHERE code = "G1"')
     aba1 = cursor.fetchone()
     aba=aba1[0]
+    cursor.execute('UPDATE vyzf SET gorin1 = NULL WHERE user_id = ?',(user_id,) )
+    cursor.execute('UPDATE vyzf SET gorin2 = NULL WHERE user_id = ?',(user_id,) )
+    cursor.execute('UPDATE vyzf SET gorin3 = NULL WHERE user_id = ?',(user_id,) )
+    cursor.execute('INSERT OR IGNORE INTO vyzf(user_id) VALUES (?)',(user_id,))
+    conn.commit()   
     podrob = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Вузы по направлению🏫', callback_data=f'{aba}')],
     [InlineKeyboardButton(text='Бесплатные курсы📚', url = 'https://dopobr.petersburgedu.ru')],
@@ -1598,6 +2708,11 @@ async def tsh(callback: CallbackQuery):
     cursor.execute(f'SELECT Vyzteg FROM directions WHERE code = "G2"')
     aba1 = cursor.fetchone()
     aba=aba1[0]
+    cursor.execute('UPDATE vyzf SET gorin1 = NULL WHERE user_id = ?',(user_id,) )
+    cursor.execute('UPDATE vyzf SET gorin2 = NULL WHERE user_id = ?',(user_id,) )
+    cursor.execute('UPDATE vyzf SET gorin3 = NULL WHERE user_id = ?',(user_id,) )
+    cursor.execute('INSERT OR IGNORE INTO vyzf(user_id) VALUES (?)',(user_id,))
+    conn.commit()   
     podrob = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Вузы по направлению🏫', callback_data=f'{aba}')],
     [InlineKeyboardButton(text='Бесплатные курсы📚', url = 'https://dopobr.petersburgedu.ru')],
@@ -1615,6 +2730,11 @@ async def tsh(callback: CallbackQuery):
     cursor.execute(f'SELECT Vyzteg FROM directions WHERE code = "G3"')
     aba1 = cursor.fetchone()
     aba=aba1[0]
+    cursor.execute('UPDATE vyzf SET gorin1 = NULL WHERE user_id = ?',(user_id,) )
+    cursor.execute('UPDATE vyzf SET gorin2 = NULL WHERE user_id = ?',(user_id,) )
+    cursor.execute('UPDATE vyzf SET gorin3 = NULL WHERE user_id = ?',(user_id,) )
+    cursor.execute('INSERT OR IGNORE INTO vyzf(user_id) VALUES (?)',(user_id,))
+    conn.commit()   
     podrob = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Вузы по направлению🏫', callback_data=f'{aba}')],
     [InlineKeyboardButton(text='Бесплатные курсы📚', url = 'https://dopobr.petersburgedu.ru')],
@@ -1632,6 +2752,11 @@ async def tsh(callback: CallbackQuery):
     cursor.execute(f'SELECT Vyzteg FROM directions WHERE code = "G4"')
     aba1 = cursor.fetchone()
     aba=aba1[0]
+    cursor.execute('UPDATE vyzf SET gorin1 = NULL WHERE user_id = ?',(user_id,) )
+    cursor.execute('UPDATE vyzf SET gorin2 = NULL WHERE user_id = ?',(user_id,) )
+    cursor.execute('UPDATE vyzf SET gorin3 = NULL WHERE user_id = ?',(user_id,) )
+    cursor.execute('INSERT OR IGNORE INTO vyzf(user_id) VALUES (?)',(user_id,))
+    conn.commit()   
     podrob = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Вузы по направлению🏫', callback_data=f'{aba}')],
     [InlineKeyboardButton(text='Бесплатные курсы📚', url = 'https://dopobr.petersburgedu.ru')],
@@ -1649,6 +2774,11 @@ async def tsh(callback: CallbackQuery):
     cursor.execute(f'SELECT Vyzteg FROM directions WHERE code = "G5"')
     aba1 = cursor.fetchone()
     aba=aba1[0]
+    cursor.execute('UPDATE vyzf SET gorin1 = NULL WHERE user_id = ?',(user_id,) )
+    cursor.execute('UPDATE vyzf SET gorin2 = NULL WHERE user_id = ?',(user_id,) )
+    cursor.execute('UPDATE vyzf SET gorin3 = NULL WHERE user_id = ?',(user_id,) )
+    cursor.execute('INSERT OR IGNORE INTO vyzf(user_id) VALUES (?)',(user_id,))
+    conn.commit()   
     podrob = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Вузы по направлению🏫', callback_data=f'{aba}')],
     [InlineKeyboardButton(text='Бесплатные курсы📚', url = 'https://dopobr.petersburgedu.ru')],
@@ -1669,6 +2799,11 @@ async def tsh(callback: CallbackQuery):
     cursor.execute(f'SELECT Vyzteg FROM directions WHERE code = "H1"')
     aba1 = cursor.fetchone()
     aba=aba1[0]
+    cursor.execute('UPDATE vyzf SET gorin1 = NULL WHERE user_id = ?',(user_id,) )
+    cursor.execute('UPDATE vyzf SET gorin2 = NULL WHERE user_id = ?',(user_id,) )
+    cursor.execute('UPDATE vyzf SET gorin3 = NULL WHERE user_id = ?',(user_id,) )
+    cursor.execute('INSERT OR IGNORE INTO vyzf(user_id) VALUES (?)',(user_id,))
+    conn.commit()   
     podrob = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Вузы по направлению🏫', callback_data=f'{aba}')],
     [InlineKeyboardButton(text='Бесплатные курсы📚', url = 'https://dopobr.petersburgedu.ru')],
@@ -1686,6 +2821,11 @@ async def tsh(callback: CallbackQuery):
     cursor.execute(f'SELECT Vyzteg FROM directions WHERE code = "H2"')
     aba1 = cursor.fetchone()
     aba=aba1[0]
+    cursor.execute('UPDATE vyzf SET gorin1 = NULL WHERE user_id = ?',(user_id,) )
+    cursor.execute('UPDATE vyzf SET gorin2 = NULL WHERE user_id = ?',(user_id,) )
+    cursor.execute('UPDATE vyzf SET gorin3 = NULL WHERE user_id = ?',(user_id,) )
+    cursor.execute('INSERT OR IGNORE INTO vyzf(user_id) VALUES (?)',(user_id,))
+    conn.commit()   
     podrob = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Вузы по направлению🏫', callback_data=f'{aba}')],
     [InlineKeyboardButton(text='Бесплатные курсы📚', url = 'https://dopobr.petersburgedu.ru')],
@@ -1703,6 +2843,11 @@ async def tsh(callback: CallbackQuery):
     cursor.execute(f'SELECT Vyzteg FROM directions WHERE code = "H3"')
     aba1 = cursor.fetchone()
     aba=aba1[0]
+    cursor.execute('UPDATE vyzf SET gorin1 = NULL WHERE user_id = ?',(user_id,) )
+    cursor.execute('UPDATE vyzf SET gorin2 = NULL WHERE user_id = ?',(user_id,) )
+    cursor.execute('UPDATE vyzf SET gorin3 = NULL WHERE user_id = ?',(user_id,) )
+    cursor.execute('INSERT OR IGNORE INTO vyzf(user_id) VALUES (?)',(user_id,))
+    conn.commit()   
     podrob = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Вузы по направлению🏫', callback_data=f'{aba}')],
     [InlineKeyboardButton(text='Бесплатные курсы📚', url = 'https://dopobr.petersburgedu.ru')],
@@ -1720,6 +2865,11 @@ async def tsh(callback: CallbackQuery):
     cursor.execute(f'SELECT Vyzteg FROM directions WHERE code = "H4"')
     aba1 = cursor.fetchone()
     aba=aba1[0]
+    cursor.execute('UPDATE vyzf SET gorin1 = NULL WHERE user_id = ?',(user_id,) )
+    cursor.execute('UPDATE vyzf SET gorin2 = NULL WHERE user_id = ?',(user_id,) )
+    cursor.execute('UPDATE vyzf SET gorin3 = NULL WHERE user_id = ?',(user_id,) )
+    cursor.execute('INSERT OR IGNORE INTO vyzf(user_id) VALUES (?)',(user_id,))
+    conn.commit()   
     podrob = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Вузы по направлению🏫', callback_data=f'{aba}')],
     [InlineKeyboardButton(text='Бесплатные курсы📚', url = 'https://dopobr.petersburgedu.ru')],
@@ -1737,6 +2887,11 @@ async def tsh(callback: CallbackQuery):
     cursor.execute(f'SELECT Vyzteg FROM directions WHERE code = "H2"')
     aba1 = cursor.fetchone()
     aba=aba1[0]
+    cursor.execute('UPDATE vyzf SET gorin1 = NULL WHERE user_id = ?',(user_id,) )
+    cursor.execute('UPDATE vyzf SET gorin2 = NULL WHERE user_id = ?',(user_id,) )
+    cursor.execute('UPDATE vyzf SET gorin3 = NULL WHERE user_id = ?',(user_id,) )
+    cursor.execute('INSERT OR IGNORE INTO vyzf(user_id) VALUES (?)',(user_id,))
+    conn.commit()   
     podrob = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Вузы по направлению🏫', callback_data=f'{aba}')],
     [InlineKeyboardButton(text='Бесплатные курсы📚', url = 'https://dopobr.petersburgedu.ru')],

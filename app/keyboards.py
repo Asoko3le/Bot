@@ -39,7 +39,7 @@ FizMat2 = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Экономист', callback_data='Popecon1')],
     [InlineKeyboardButton(text='Финансист', callback_data='Popfin1')],
     [InlineKeyboardButton(text='Бухгалтер', callback_data='Popbuh1')],
-    [InlineKeyboardButton(text='Назад📌', callback_data='Dop')]
+    [InlineKeyboardButton(text='Назад📌', callback_data='main')]
 ])
 Gym2 = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Маркетолог', callback_data='Popmark1')],
@@ -47,7 +47,7 @@ Gym2 = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Журналист', callback_data='Popzhur1')],
     [InlineKeyboardButton(text='Преподаватель', callback_data='Popprep1')],
     [InlineKeyboardButton(text='Психолог', callback_data='Poppsihol1')],
-    [InlineKeyboardButton(text='Назад📌', callback_data='Dop')]
+    [InlineKeyboardButton(text='Назад📌', callback_data='main')]
 ])
 HimBio2 = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Химик', callback_data='Pophim1')],
@@ -55,7 +55,7 @@ HimBio2 = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Психотерапевт', callback_data='Poppsihoter1')],
     [InlineKeyboardButton(text='Аллерголог', callback_data='Popall1')],
     [InlineKeyboardButton(text='Ботаник', callback_data='Popbot1')],
-    [InlineKeyboardButton(text='Назад📌', callback_data='Dop')]
+    [InlineKeyboardButton(text='Назад📌', callback_data='main')]
 ])
 
 
@@ -129,96 +129,6 @@ HimBio1 = InlineKeyboardMarkup(inline_keyboard=[
 ])
 
 # endregion
-# region -
-Popinz = InlineKeyboardMarkup(inline_keyboard=[
-    [InlineKeyboardButton(text='Курсы📚', url = 'https://clck.ru/3FcvCm')],
-    [InlineKeyboardButton(text='Вузы🏫', callback_data='Popinz1')],
-    [InlineKeyboardButton(text='Назад📌', callback_data='main')]
-])
-
-Popit = InlineKeyboardMarkup(inline_keyboard=[
-    [InlineKeyboardButton(text='Курсы📚',url = 'https://clck.ru/3FcvCm')],
-    [InlineKeyboardButton(text='Вузы🏫', callback_data='Vyz')],
-    [InlineKeyboardButton(text='Назад📌', callback_data='main')]
-])
-
-Popecon = InlineKeyboardMarkup(inline_keyboard=[
-    [InlineKeyboardButton(text='Курсы📚', url = 'https://clck.ru/3FcvCm')],
-    [InlineKeyboardButton(text='Вузы🏫', callback_data='Vyz')],
-    [InlineKeyboardButton(text='Назад', callback_data='main')]
-])
-
-Popfin = InlineKeyboardMarkup(inline_keyboard=[
-    [InlineKeyboardButton(text='Курсы📚', url = 'https://clck.ru/3FcvCm')],
-    [InlineKeyboardButton(text='Вузы🏫', callback_data='Vyz')],
-    [InlineKeyboardButton(text='Назад📌', callback_data='main')]
-])
-
-Popbuh = InlineKeyboardMarkup(inline_keyboard=[
-    [InlineKeyboardButton(text='Курсы📚', url = 'https://clck.ru/3FcvCm')],
-    [InlineKeyboardButton(text='Вузы🏫', callback_data='Vyz')],
-    [InlineKeyboardButton(text='Назад📌', callback_data='main')]
-])
-
-Popmark = InlineKeyboardMarkup(inline_keyboard=[
-    [InlineKeyboardButton(text='Курсы📚', url = 'https://clck.ru/3FcvCm')],
-    [InlineKeyboardButton(text='Вузы🏫', callback_data='Vyz')],
-    [InlineKeyboardButton(text='Назад📌', callback_data='main')]
-])
-
-Popadv = InlineKeyboardMarkup(inline_keyboard=[
-    [InlineKeyboardButton(text='Курсы📚', url = 'https://clck.ru/3FcvCm')],
-    [InlineKeyboardButton(text='Вузы🏫', callback_data='Vyz')],
-    [InlineKeyboardButton(text='Назад📌', callback_data='main')]
-])
-
-Popzhur = InlineKeyboardMarkup(inline_keyboard=[
-    [InlineKeyboardButton(text='Курсы📚', url = 'https://clck.ru/3FcvCm')],
-    [InlineKeyboardButton(text='Вузы🏫', callback_data='Vyz')],
-    [InlineKeyboardButton(text='Назад📌', callback_data='main')]
-])
-
-Popprep = InlineKeyboardMarkup(inline_keyboard=[
-    [InlineKeyboardButton(text='Курсы📚', url = 'https://clck.ru/3FcvCm')],
-    [InlineKeyboardButton(text='Вузы🏫', callback_data='Vyz')],
-    [InlineKeyboardButton(text='Назад📌', callback_data='main')]
-])
-
-Poppsihol = InlineKeyboardMarkup(inline_keyboard=[
-    [InlineKeyboardButton(text='Курсы📚', url = 'https://clck.ru/3FcvCm')],
-    [InlineKeyboardButton(text='Вузы🏫', callback_data='Vyz')],
-    [InlineKeyboardButton(text='Назад📌', callback_data='main')]
-])
-
-Pophim = InlineKeyboardMarkup(inline_keyboard=[
-    [InlineKeyboardButton(text='Курсы📚', url = 'https://clck.ru/3FcvCm')],
-    [InlineKeyboardButton(text='Вузы🏫', callback_data='Vyz')],
-    [InlineKeyboardButton(text='Назад📌', callback_data='main')]
-])
-
-Popecol = InlineKeyboardMarkup(inline_keyboard=[
-    [InlineKeyboardButton(text='Курсы📚', url = 'https://clck.ru/3FcvCm')],
-    [InlineKeyboardButton(text='Вузы🏫', callback_data='Vyz')],
-    [InlineKeyboardButton(text='Назад🏫📌', callback_data='main')]
-])
-
-Poppsihoter = InlineKeyboardMarkup(inline_keyboard=[
-    [InlineKeyboardButton(text='Курсы📚', url = 'https://clck.ru/3FcvCm')],
-    [InlineKeyboardButton(text='Вузы🏫', callback_data='Vyz')],
-    [InlineKeyboardButton(text='Назад📌', callback_data='main')]
-])
-
-Popall = InlineKeyboardMarkup(inline_keyboard=[
-    [InlineKeyboardButton(text='Курсы📚', url = 'https://clck.ru/3FcvCm')],
-    [InlineKeyboardButton(text='Вузы🏫', callback_data='Vyz')],
-    [InlineKeyboardButton(text='Назад📌', callback_data='main')]
-])
-
-Popbot = InlineKeyboardMarkup(inline_keyboard=[
-    [InlineKeyboardButton(text='Курсы📚', url = 'https://clck.ru/3FcvCm')],
-    [InlineKeyboardButton(text='Вузы🏫', callback_data='Vyz')],
-    [InlineKeyboardButton(text='Назад📌', callback_data='main')]
-])
 
 
 # endregion
